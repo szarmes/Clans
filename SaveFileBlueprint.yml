@@ -1,0 +1,20 @@
+A Team Name:
+    Tag: 'TeamA'
+    Color: 'RED'
+    Motd: 'Hello Team!'
+    Score: '9001'
+    List:
+        Rank 1:
+            Rank Name: 'Leader'
+            Permissions: {SetRanks: true, EditRanks: true, Kick: true, TeamChat: true, Invite: true, AreaInfo: true}
+            Members: [Player1, Player2]
+        Rank 2:
+            Rank Name: 'Member'
+            Permissions: {SetRanks: false, EditRanks: false, Kick: false, TeamChat: false, Invite: false, AreaInfo: false}
+            Members: [Player3, Player4, Player5, Player6, Player7, Player8]
+    Area:
+        Name: 'Test Team City'
+        X: '1000'
+        Z: '1000'
+        Upgrades: {IntruderAlert: true, BlockDestroyDamage: true, BlockResistance: true, AreaCleanse: true}
+        Occupier: 'Team B'
