@@ -8,3 +8,68 @@ Rankings within Teams
 Team Areas
 Anti Friendly Fire
 Team Score
+
+Classes:
+Clans - Main plugin class, with commands, data structures, etc.
+Team - Stores all of a Team's data.
+TeamArea - TeamArea data and functions.
+TeamPlayer - Stores all a Players data
+Rank - Stores rank permissions.
+ELO - Stores ELO data of a player.
+Config - Stores all plugin settings.
+ClansPlayerListener - Player chat, join, and leave listeners.
+ClansBlockListener - Block placement, destroy, damage, etc listeners.
+ClansEntityListener - Used for determining if a attacked entity is a Teammate (Friendly Fire). 
+
+Commands:
+/team create <Team Name>					//Creates a team
+/t <Message>							//Sends a message to the entire team
+/team invite <PlayerName>					//Invites a player to the team
+/team accept							//Accepts an invite
+/team reject							//Rejects an invite
+/team list							//Lists all teams
+/team info |<Team Name>						//Prints info about a team
+/team online							//Prints players in team that are online
+/team leave							//Leave a team
+/team tk <on|off>						//Toggles friendly fire
+
+/team topscorelist						//Prints the top 5 teams based on score
+/elo list							//Prints top 5 players based on elo
+/team score <_|TeamName>					//Prints the score of the team
+/elo <PlayerName>						//Prints the elo of a player
+
+/team kick <PlayerName>						//Kicks a player from a team
+/team rcreate <RankName>					//Creates a new rank at the bottom of the team structure
+/team rset <PlayerName> <RankNumber>				//Sets a player's rank
+/team rrename <RankNumber> <RankName>				//Sets a rank's name
+/team rmassmove <OldRankNumber> <NewRankNumber>			//Moves all players of a rank to another
+/team rinfo <RankNumber>					//Prints permissions of a rank
+/team rpermission <RankNumber> <Permission> <Allow|Deny>	//Sets a permission of a rank
+/team rdelete <RankNunber>					//Removes a rank, all players inside wil lbe moved to the bottom rank
+
+/team area info							//Prints a team's area info
+/team area claim <AreaName>					//Purchases a team area
+/team area upgrade <blockresist|blockdamage|intruderalert>	//Purchases an area upgrade
+/team area incsize <GoldAmount>					//Increases area size based on amount of currency
+/capture | /cap							//Places an area under seige
+/team arealist							//Prints all captured areas by a team
+
+/team disband							//Disbands the entire team
+/team tag <Tag>							//Sets a team's tag
+/team color <Color>						//Sets a team's color
+/team motd <_|Message>						//Sets a team's Message of the Day, prints if no argument.
+
+/team help <1|2|3|4>						//Prints commands and how to use them
+
+
+Other mechanics:
+-When /capture or /cap is used within a team area, a timer is set and is decreased or increased based on how many players from each team are in the area.
+-If a player is killed inside a team area by another player not of the same team, the player is sent back to spawn.
+-Teams receive score points every 30 minutes for each area they capture, team areas cannot be captured if a team is offline, nor do they receive points of the areas they own.
+-Players receive 1 diamond per captured area every 30 mintues if they are online.
+
+
+
+
+
+
