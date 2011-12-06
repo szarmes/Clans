@@ -63,13 +63,17 @@ Commands:
 
 
 Other mechanics:
--When /capture or /cap is used within a team area, a timer is set and is decreased or increased based on how many players from each team are in the area.
+
+Area Capturing:
+-When /capture or /cap is used within a team area, a timer is set for every 10-20 seconds, for each player in the inner area, 1pt will be awared to the team of the player, the difference of the pts is then taken and added to the capture progress. The capture hitpoints will be 100, if the defending team has more players area, hitpoints will be awareded to the area, if the attacking team has more players in the area hitpoints will be subtracted from the area. If hitpoints reach 0 then the attacking team will have captured the area, if the defending team restores hitpoints to 100, then the area is sucessfully defended and ownership remains with defenders. If the players for both team reaches 0 in an area 40 seconds in a row, then the capture fails and the defenders keep ownership. Every 30 seconds or a mintue the current capture progress will be printed like so in team chat, depending on which team it is attackers/defenders:
+[2v1 | +1pt] Capture Progress: [||||||||||||||||    ] 80%
+[1v2 | -1pt] Defend Progress:  [||||                ] 20%
+
+
+Beds:
 -If a player is killed inside a team area by another player not of the same team, the player is sent back to spawn.
--Teams receive score points every 30 minutes for each area they capture, team areas cannot be captured if a team is offline, nor do they receive points of the areas they own.
+
+Area Rewards:
+-Teams receive score points every 30 minutes for each area they capture, team areas cannot be captured if a team is offline, nor can an offline team receive points. If a team's area is captured that team will lose points every 30 minutes, regardless of whether they are offline or not.
 -Players receive 1 diamond per captured area every 30 mintues if they are online.
-
-
-
-
-
 
