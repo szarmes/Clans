@@ -1,0 +1,27 @@
+A Team Name:
+    Tag: 'TeamA'
+    Color: 'RED'
+    Motd: 'Hello Team!'
+    Score: '10000'
+    List:
+        Rank 1:
+            Rank Name: 'Leader'
+            Permissions: {SetRanks: true, EditRanks: true, Kick: true, TeamChat: true, Invite: true, AreaInfo: true}
+            Members: 
+                - Player1: {LastOnline: '10/10/10', ELO: '1000'}
+                - Player2: {LastOnline: '10/10/10', ELO: '1000'}
+        Rank 2:
+            Rank Name: 'Member'
+            Permissions: {SetRanks: false, EditRanks: false, Kick: false, TeamChat: false, Invite: false, AreaInfo: false}
+            Members: 
+                - Player3: {LastOnline: '10/10/10', ELO: '1000'}
+                - Player4: {LastOnline: '10/10/10', ELO: '1000'}
+                - Player5: {LastOnline: '10/10/10', ELO: '1000'}
+                - Player6: {LastOnline: '10/10/10', ELO: '1000'}
+    Area:
+        Name: 'Test Team City'
+        X: '1000'
+        Z: '1000'
+        Radius: '100'
+        Upgrades: {IntruderAlert: true, BlockDestroyDamage: true, BlockResistance: true, AreaCleanse: true}
+        Holder: 'Team B'
