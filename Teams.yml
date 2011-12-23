@@ -8,16 +8,16 @@ A Team Name:
             Rank Name: 'Leader'
             Permissions: {SetRanks: true, EditRanks: true, Kick: true, TeamChat: true, Invite: true, AreaInfo: true}
             Members: 
-                - Player1: {LastOnline: '10/10/10', ELO: '1000'}
-                - Player2: {LastOnline: '10/10/10', ELO: '1000'}
+                - Player1
+                - Player2
         Rank 2:
             Rank Name: 'Member'
             Permissions: {SetRanks: false, EditRanks: false, Kick: false, TeamChat: false, Invite: false, AreaInfo: false}
             Members: 
-                - Player3: {LastOnline: '10/10/10', ELO: '1000'}
-                - Player4: {LastOnline: '10/10/10', ELO: '1000'}
-                - Player5: {LastOnline: '10/10/10', ELO: '1000'}
-                - Player6: {LastOnline: '10/10/10', ELO: '1000'}
+                - Player3
+                - Player4
+                - Player5
+                - Player6
     Area:
         Name: 'Test Team City'
         X: '1000'
