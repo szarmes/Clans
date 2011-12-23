@@ -40,7 +40,64 @@ public class Clans {
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
 	{
-		return true;
+		String commandName = cmd.getName().toLowerCase();
+        if (sender instanceof Player) 
+        {
+            Player player = (Player) sender;
+            TeamPlayer tPlayer = ClansUsers.get(player.getDisplayName());
+            
+            if(commandName.equals("team") && args.length >= 1)
+            {
+            	switch( args[0].toUpperCase() )
+            	{
+            		case "CREATE": break;
+            		case "INVITE": break;
+            		case "ACCEPT": break;
+            		case "REJECT": break;
+            		case "LIST": break;
+            		case "INFO": break;
+            		case "ONLINE": break;
+            		case "LEAVE": break;
+            		case "TK": break;
+            		case "TOPSCORELIST": break;
+            		case "SCORE": break;
+            		case "KICK": break;
+            		case "RCREATE": break;
+            		case "RSET": break;
+            		case "RRENAME": break;
+            		case "RMASSMOVE": break;
+            		case "RINFO": break;
+            		case "RPERMISSION": break;
+            		case "RDELETE": break;
+            		case "DISBAND": break;
+            		case "TAG": break;
+            		case "COLOR": break;
+            		case "MOTD": break;
+            		case "HELP": break;
+            		case "AREA": 
+            			break;
+            	}
+            }
+            else if(commandName.equals("t"))
+            {
+            	
+            }
+            else if(commandName.equals("elo"))
+            {
+            	if(args[0].toUpperCase() == "LIST")
+            	{
+            		
+            	}
+            	else
+            	{
+            		//Must be a player name
+            	}
+            }
+            
+		
+		
+        }
+        return true;
 	}
 	private void loadData()
 	{
