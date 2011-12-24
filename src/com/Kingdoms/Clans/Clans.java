@@ -62,16 +62,16 @@ public class Clans {
             		case "TOPSCORELIST": break;
             		case "SCORE": break;
             		case "KICK": break;
-            		case "RCREATE": break;
-            		case "RSET": break;
-            		case "RRENAME": break;
-            		case "RMASSMOVE": break;
-            		case "RINFO": break;
-            		case "RPERMISSION": break;
-            		case "RDELETE": break;
+            		case "RCREATE": case: "RANKCREATE": break;
+            		case "RSET": case: "RANKSET": break;
+            		case "RRENAME": case "RANKRENAME": break;
+            		case "RMASSMOVE": "RANKMASSMOVE": break;
+            		case "RINFO": case "RANKINFO": break;
+            		case "RPERMISSION": case "RANKPERMISSION": break;
+            		case "RDELETE": case "RANKDELETE": break;
             		case "DISBAND": break;
             		case "TAG": break;
-            		case "COLOR": break;
+            		case "COLOR": case "COLOUR": break;
             		case "MOTD": break;
             		case "HELP": break;
             		case "AREA": 
