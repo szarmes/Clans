@@ -26,7 +26,14 @@ public class TeamPlayer {
 		TeamKey = "";
 		Invite = "";
 	}
-	
+	public boolean hasTeam()
+	{
+		return TeamKey.equalsIgnoreCase("");
+	}
+	public void setTeamKey(String key)
+	{
+		TeamKey = key;
+	}
 	private Calendar getCurrentDate()
 	{
 		Calendar cal = Calendar.getInstance();

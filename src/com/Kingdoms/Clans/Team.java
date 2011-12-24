@@ -95,10 +95,10 @@ public class Team {
 	{
 		return TeamList.get(RankNumber-1).getRank();
 	}
-	private ChatColor interpretColor(String colorin) {
+	private ChatColor interpretColor(String Colorin) {
 
 		ChatColor c;
-    	switch(colorin.toUpperCase())
+    	switch(Colorin.toUpperCase())
     	{
     		case "DARK_RED": 
     			c = ChatColor.DARK_RED;

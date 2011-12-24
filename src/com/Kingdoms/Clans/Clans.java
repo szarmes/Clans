@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,9 +50,29 @@ public class Clans {
             
             if(commandName.equals("team") && args.length >= 1)
             {
-            	switch( args[0].toUpperCase() )
+            	switch(args[0].toUpperCase() )
             	{
-            		case "CREATE": break;
+            		case "CREATE": 
+            			if(args.length < 2) {
+            				player.sendMessage(ChatColor.RED + "Invalid number of arguments.");
+            				return true;
+            			}
+            			else if(tPlayer.hasTeam()) {
+            				player.sendMessage(ChatColor.RED + "You are already in a team.");
+            				return true;
+            			}
+            			else{
+            				int i;
+            				String TeamName = args[1];
+            				for(i=2;i<args.length;i++)
+            					TeamName += " " + args[i];
+            				//Set Player's Team to new Key
+            				Users.get(player.getDisplayName()).setTeamKey(TeamName);
+            				//Create New Team and Add to Teams
+            				Teams.put(TeamName, new Team(player.getDisplayName()));
+            				player.sendMessage(ChatColor.GREEN + "Team " + TeamName +" successfully created!");
+            			}
+            			break;
             		case "INVITE": break;
             		case "ACCEPT": break;
             		case "REJECT": break;
@@ -76,8 +97,9 @@ public class Clans {
             		case "MOTD": break;
             		case "HELP": break;
             		case "AREA": 
-            			break;
+            			break;           			
             	}
+        		return true;
             }
             else if(commandName.equals("t"))
             {
