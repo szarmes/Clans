@@ -53,7 +53,8 @@ public class Clans {
         if (sender instanceof Player) 
         {
             Player player = (Player) sender;
-            TeamPlayer tPlayer = Users.get(player.getDisplayName());
+            String PlayerName = player.getDisplayName();
+            TeamPlayer tPlayer = Users.get(PlayerName);
             
             if(commandName.equals("team") && args.length >= 1)
             {
@@ -77,9 +78,9 @@ public class Clans {
             				for(i=2;i<args.length;i++)
             					TeamName += " " + args[i];
             				//Set Player's Team to new Key
-            				Users.get(player.getDisplayName()).setTeamKey(TeamName);
+            				Users.get(PlayerName).setTeamKey(TeamName);
             				//Create New Team and Add to Teams
-            				Teams.put(TeamName, new Team(player.getDisplayName()));
+            				Teams.put(TeamName, new Team(PlayerName));
             				player.sendMessage(ChatColor.GREEN + "Team " + TeamName +" successfully created!");
             			}
             			break;
@@ -95,7 +96,7 @@ public class Clans {
             				player.sendMessage(ChatColor.RED + "Must have a team to be able to invite to one.");
             				return true;
             			}
-            			else if (!Teams.get(tPlayer.getTeamKey()).getRank(player.getDisplayName()).canInvite()) { //NOT ALLOWED TO INVITE
+            			else if (!getRank(PlayerName).canInvite()) { //NOT ALLOWED TO INVITE
             				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to invite on this team");
             				return true;
             			}
@@ -252,7 +253,7 @@ public class Clans {
             reader = new FileReader(PlayersFile);
             pl = (ArrayList<HashMap<String,String>>)yamlPlayers.load(reader);
         } catch (final FileNotFoundException fnfe) {
-        	 System.out.println("Teams.YML Not Found!");
+        	 System.out.println("Players.YML Not Found!");
         	   try{
 	            	  String strManyDirectories="plugins/Clans";
 	            	  boolean success = (new File(strManyDirectories)).mkdirs();
@@ -346,7 +347,11 @@ public class Clans {
 	{
 		//Print Clans and Players to Files.
 	}
-	
+	private TeamRank getRank(String PlayerName)
+	{
+		TeamPlayer tPlayer = Users.get(PlayerName);
+		return Teams.get(tPlayer.getTeamKey()).getRank(PlayerName);
+	}
 	
 	
 	
