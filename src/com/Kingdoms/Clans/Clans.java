@@ -65,7 +65,7 @@ public class Clans {
             		case "RCREATE": case: "RANKCREATE": break;
             		case "RSET": case: "RANKSET": break;
             		case "RRENAME": case "RANKRENAME": break;
-            		case "RMASSMOVE": "RANKMASSMOVE": break;
+            		case "RMASSMOVE": case "RANKMASSMOVE": break;
             		case "RINFO": case "RANKINFO": break;
             		case "RPERMISSION": case "RANKPERMISSION": break;
             		case "RDELETE": case "RANKDELETE": break;
