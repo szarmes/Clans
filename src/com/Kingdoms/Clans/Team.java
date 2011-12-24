@@ -8,22 +8,142 @@ import org.bukkit.ChatColor;
 
 public class Team {
 	
-	private ArrayList<TeamRank> TeamRanks;
-	private ArrayList<HashSet<String>> TeamMembers;
+	private ArrayList<TierList> TeamList;
+	
 	private ChatColor TeamColor;
 	private String TeamMOTD;
 	private int TeamScore;
 	private String TeamTag;
 	
 	//Read in from file
-	public Team(Object in)
+	public Team(ArrayList<TierList> TLin, String MOTDin, int Scorein, String Tagin, String Colorin)
 	{
-		
+		TeamList = TLin;
+		TeamMOTD = MOTDin;
+		TeamScore = Scorein;
+		TeamTag = Tagin;
+		TeamColor = interpretColor(Colorin);
 	}
-	//When a player creates a team
-	public Team(String LeaderName)
+	//Read in from file
+	public Team(String Leadername)
 	{
+		TeamList = new ArrayList<TierList> ();
 		
+		//Make Leader Rank and Add Leader to List
+		TeamRank LeaderRank = new TeamRank("Leader");
+		LeaderRank.makeTopRank();
+		TeamList.add(new TierList(LeaderRank));
+		TeamList.get(0).add(Leadername);
+		
+		//Make Member List
+		TeamRank MemberRank = new TeamRank("Member");
+		TeamList.add(new TierList(MemberRank));
+		
+		TeamMOTD = "";
+		TeamScore = 0;
+		TeamTag = "";
+		TeamColor = interpretColor("GRAY");
+	}
+	public void addMember(String PlayerName)
+	{
+		int LastRankNumber = TeamList.size()-1;
+		TeamList.get(LastRankNumber).add(PlayerName);
+	}
+	public void removeMember(String PlayerName)
+	{
+		int RankCount = TeamList.size();
+		int i;
+		for(i=0; i<RankCount; i++)
+		{
+			if(TeamList.get(i).containsMember(PlayerName))
+				TeamList.get(i).remove(PlayerName);
+		}
+	}
+	public void addRank(TeamRank NewRank)
+	{
+		TeamList.add(new TierList(NewRank));
+	}
+	public boolean removeRank(int i)
+	{
+		if(TeamList.get(i-1).isEmpty())
+		{
+			TeamList.remove(i-1);
+			return true;
+		}
+		//Members must be removed first
+		return false;
+	}
+	public int getRankCount()
+	{
+		return TeamList.size();
+	}
+	public TeamRank getRank(String PlayerName)
+	{
+		int RankCount = TeamList.size();
+		int i;
+		
+		TeamRank r = new TeamRank("");
+		
+		for(i=0; i<RankCount; i++)
+		{
+			if(TeamList.get(i).containsMember(PlayerName))
+				r = TeamList.get(i).getRank();
+		}
+		return r;
+	}
+	public TeamRank getRank(int RankNumber)
+	{
+		return TeamList.get(RankNumber-1).getRank();
+	}
+	private ChatColor interpretColor(String colorin) {
+
+		ChatColor c;
+    	switch(colorin.toUpperCase())
+    	{
+    		case "DARK_RED": 
+    			c = ChatColor.DARK_RED;
+    			break;
+    		case "RED": 
+    			c = ChatColor.RED;
+    			break;
+    		case "DARK_AQUA": 
+    			c = ChatColor.DARK_AQUA;
+    			break;
+    		case "AQUA": 
+    			c = ChatColor.AQUA;
+    			break;
+    		case "DARK_GREEN": 
+    			c = ChatColor.DARK_GREEN;
+    			break;
+    		case "GREEN": 
+    			c = ChatColor.GREEN;
+    			break;
+    		case "DARK_BLUE": 
+    			c = ChatColor.DARK_BLUE;
+    			break;
+    		case "BLUE": 
+    			c = ChatColor.BLUE;
+    			break;
+    		case "DARK_PURPLE": 
+    			c = ChatColor.DARK_PURPLE;
+    			break;
+    		case "PURPLE": 
+    			c = ChatColor.LIGHT_PURPLE;
+    			break;
+    		case "GOLD": 
+    			c = ChatColor.GOLD;
+    			break;
+    		case "YELLOW": 
+    			c = ChatColor.YELLOW;
+    			break;
+    		case "BLACK": 
+    			c = ChatColor.BLACK;
+    			break;
+    		default:
+    			c =  ChatColor.GRAY;
+    			break;
+    	}
+		return c;
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
 public class Clans {
@@ -44,7 +45,7 @@ public class Clans {
         if (sender instanceof Player) 
         {
             Player player = (Player) sender;
-            TeamPlayer tPlayer = ClansUsers.get(player.getDisplayName());
+            TeamPlayer tPlayer = Users.get(player.getDisplayName());
             
             if(commandName.equals("team") && args.length >= 1)
             {
@@ -62,8 +63,8 @@ public class Clans {
             		case "TOPSCORELIST": break;
             		case "SCORE": break;
             		case "KICK": break;
-            		case "RCREATE": case: "RANKCREATE": break;
-            		case "RSET": case: "RANKSET": break;
+            		case "RCREATE": case "RANKCREATE": break;
+            		case "RSET": case "RANKSET": break;
             		case "RRENAME": case "RANKRENAME": break;
             		case "RMASSMOVE": case "RANKMASSMOVE": break;
             		case "RINFO": case "RANKINFO": break;
