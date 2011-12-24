@@ -1,7 +1,13 @@
 package com.Kingdoms.Clans;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -9,6 +15,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.yaml.snakeyaml.Yaml;
 
 public class Clans {
 
@@ -80,14 +87,21 @@ public class Clans {
                      *	TEAM INVITE - Invites a player to the team
                      * ============================================================================== */   
             		case "INVITE": 
-            			if(args.length < 2){
+            			if(args.length < 2){ //NOT ENOGUH ARGS
             				player.sendMessage(ChatColor.RED + "You didn't invite anyone.");
+            				return true;
             			}
-            			else if(tPlayer.hasTeam()){
-            				//if player CanInvite(). need to find how to connect that.
-            			}
-            			else 
+            			else if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "Must have a team to be able to invite to one.");
+            				return true;
+            			}
+            			else if (!Teams.get(tPlayer.getTeamKey()).getRank(player.getDisplayName()).canInvite()) { //NOT ALLOWED TO INVITE
+            				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to invite on this team");
+            				return true;
+            			}
+            			else {
+            				//invite player
+            			}
             			break;
                 	/* ==============================================================================
                 	 *	TEAM ACCEPT - Accepts an invite
@@ -227,11 +241,102 @@ public class Clans {
 	}
 	private void loadData()
 	{
-		//Load Clans and Players from Files.
+		/*
+		 * LOAD PLAYERS FROM FILE
+		 * 
+		 */
+		ArrayList<HashMap<String,String>> pl = null;
+		Yaml yamlPlayers = new Yaml();
+		Reader reader = null;
+        try {
+            reader = new FileReader(PlayersFile);
+            pl = (ArrayList<HashMap<String,String>>)yamlPlayers.load(reader);
+        } catch (final FileNotFoundException fnfe) {
+        	 System.out.println("Teams.YML Not Found!");
+        	   try{
+	            	  String strManyDirectories="plugins/Clans";
+	            	  boolean success = (new File(strManyDirectories)).mkdirs();
+	            	  }catch (Exception e){//Catch exception if any
+	            	  System.err.println("Error: " + e.getMessage());
+	            	  }
+        } finally {
+            if (null != reader) {
+                try {
+                    reader.close();
+                } catch (final IOException ioe) {
+                    System.err.println("We got the following exception trying to clean up the reader: " + ioe);
+                }
+            }
+        }
+        if(pl != null)
+        {
+        	//TODO: Load Player data into Users
+        }
 		
-		//Load Players First
 		
-		//Load Clans Second
+		/*
+		 * LOAD TEAMS FROM FILE
+		 * 
+		 */
+		HashMap<String, HashMap<String,Object>> h = null;
+		Yaml yaml = new Yaml();
+        try {
+            reader = new FileReader(TeamsFile);
+            h = (HashMap<String, HashMap<String,Object>>)yaml.load(reader);
+        } catch (final FileNotFoundException fnfe) {
+        	 System.out.println("Teams.YML Not Found!");
+        	   try{
+	            	  String strManyDirectories="plugins/Clans";
+	            	  boolean success = (new File(strManyDirectories)).mkdirs();
+	            	  }catch (Exception e){//Catch exception if any
+	            	  System.err.println("Error: " + e.getMessage());
+	            	  }
+        } finally {
+            if (null != reader) {
+                try {
+                    reader.close();
+                } catch (final IOException ioe) {
+                    System.err.println("We got the following exception trying to clean up the reader: " + ioe);
+                }
+            }
+            
+        }
+       //CREATE TEAMS ONE AT A TIME
+       if(h != null)
+       {  
+    	   System.out.println(h.toString());
+    	   for(String key : h.keySet())
+    	   {
+    		  ///Get Hashmap containing all Team Data
+    		   HashMap<String,Object> t = h.get(key);
+    		   
+    		   String MOTD = (String) t.get("Motd");
+    		   String Tag = (String) t.get("Tag");
+    		   String Color = (String) t.get("Color");
+    		   int Score = Integer.parseInt(((String) t.get("Score")));
+    		   
+    		   //Create Tier Lists
+    		   ArrayList<TierList> TeamList = new ArrayList<TierList>();
+    		   HashMap<String,HashMap<String,Object>> List = (HashMap<String, HashMap<String, Object>>) t.get("List");
+    		   for(String rankNumber : List.keySet())
+    		   {
+    			   HashMap<String,Object> Tier = List.get(rankNumber);
+    			   //Create Rank
+    			   TeamRank newRank = new TeamRank((String)Tier.get("Rank Name"),(HashMap<String,Boolean>)Tier.get("Permissions"));
+    			   
+    			   //Add TeamKeys to all Members
+    			   for(String PlayerName : (HashSet<String>)Tier.get("Members"))
+    				   //Users.get(PlayerName).setTeamKey(key);
+    			   
+    			   //Add Tier to TeamList
+    			   TeamList.add(new TierList(newRank, (HashSet<String>)Tier.get("Members")));
+    		   }
+    		   //Add to Teams
+    		   //Teams.put(key, new Team(TeamList, MOTD, Score, Tag, Color));
+    		   
+    		   //TODO: Add Team Area Info
+    	   }
+       }
 	}
 	private void saveAllData()
 	{

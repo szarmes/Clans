@@ -4,12 +4,20 @@ import java.util.HashSet;
 
 public class TierList {
 	
-	TeamRank rank;
+	TeamRank Rank;
 	HashSet<String> RankMembers;
+	
+	//Newly Created
 	public TierList(TeamRank r)
 	{
-		rank = r;
+		Rank = r;
 		RankMembers = new HashSet<String>();
+	}
+	//Read in from File
+	public TierList(TeamRank r, HashSet<String> list)
+	{
+		Rank = r;
+		RankMembers = list;
 	}
 	public void add(String PlayerName)
 	{
@@ -28,9 +36,9 @@ public class TierList {
 		return RankMembers.isEmpty();
 	}
 	public TeamRank getRank() {
-		return rank;
+		return Rank;
 	}
 	public void setRank(TeamRank rank) {
-		this.rank = rank;
+		Rank = rank;
 	}	
 }

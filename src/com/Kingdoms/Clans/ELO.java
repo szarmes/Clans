@@ -1,6 +1,6 @@
 package com.Kingdoms.Clans;
 
-public class PlayerELO
+public class ELO
 {
 	//Receive ELO from winner and loser to adjust the winners rank. 
 	public int killer(int winner, int loser){

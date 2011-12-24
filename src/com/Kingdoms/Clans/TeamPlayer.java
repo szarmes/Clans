@@ -21,7 +21,7 @@ public class TeamPlayer {
 	//When player joins for the first time
 	TeamPlayer()
 	{
-		ELO = 0;
+		ELO = 1400;
 		LastSeen = getCurrentDate();
 		TeamKey = "";
 		Invite = "";
@@ -33,6 +33,9 @@ public class TeamPlayer {
 	public void setTeamKey(String key)
 	{
 		TeamKey = key;
+	}
+	public String getTeamKey() {
+		return TeamKey;
 	}
 	private Calendar getCurrentDate()
 	{

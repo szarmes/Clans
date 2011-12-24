@@ -1,5 +1,7 @@
 package com.Kingdoms.Clans;
 
+import java.util.HashMap;
+
 public class TeamRank {
 	
 	private String RankName;
@@ -22,6 +24,17 @@ public class TeamRank {
 		canTeamChat = true;
 		canSeeAreaInfo = false;
 	}
+	//Read in from file
+	public TeamRank(String name, HashMap<String,Boolean> perms)
+	{
+		RankName = name;
+		canSetRanks = perms.get("SetRanks");
+		canInvite = perms.get("Invite");
+		canEditRanks = perms.get("EditRanks");
+		canKick = perms.get("Kick");
+		canTeamChat = perms.get("TeamChat");
+		canSeeAreaInfo = perms.get("AreaInfo");
+	}
 	public void makeTopRank()
 	{
 		canSetRanks = true;
@@ -37,37 +50,37 @@ public class TeamRank {
 	public void setRankName(String rankName) {
 		RankName = rankName;
 	}
-	public boolean CanSetRanks() {
+	public boolean canSetRanks() {
 		return canSetRanks;
 	}
 	public void setCanSetRanks(boolean canSetRanks) {
 		this.canSetRanks = canSetRanks;
 	}
-	public boolean CanInvite() {
+	public boolean canInvite() {
 		return canInvite;
 	}
 	public void setCanInvite(boolean canInvite) {
 		this.canInvite = canInvite;
 	}
-	public boolean CanEditRanks() {
+	public boolean canEditRanks() {
 		return canEditRanks;
 	}
-	public void CanEditRanks(boolean canEditRanks) {
+	public void setCanEditRanks(boolean canEditRanks) {
 		this.canEditRanks = canEditRanks;
 	}
-	public boolean CanKick() {
+	public boolean canKick() {
 		return canKick;
 	}
 	public void setCanKick(boolean canKick) {
 		this.canKick = canKick;
 	}
-	public boolean CanTeamChat() {
+	public boolean canTeamChat() {
 		return canTeamChat;
 	}
 	public void setCanTeamChat(boolean canTeamChat) {
 		this.canTeamChat = canTeamChat;
 	}
-	public boolean CanSeeAreaInfo() {
+	public boolean canSeeAreaInfo() {
 		return canSeeAreaInfo;
 	}
 	public void setCanSeeAreaInfo(boolean canSeeAreaInfo) {
