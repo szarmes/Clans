@@ -23,30 +23,30 @@ public class Clans {
 	public static HashMap<String, TeamPlayer> Users = new HashMap<String, TeamPlayer>();
 	public static HashMap<String, Team> Teams = new HashMap<String, Team>(); 
 	public static HashMap<String, TeamArea> TeamAreas = new HashMap<String, TeamArea>();
-	
+
 	//Files
 	File TeamsFile;
 	File PlayersFile;
-	
+
 	//Logger
 	Logger log = Logger.getLogger("Minecraft");//Define your logger
-	
-	
+
+
 	public void onEnable() {
-		
+
 		//Team File
 		TeamsFile = new File("plugins/Clans/Teams.yml");
 		//Players File
 		TeamsFile = new File("plugins/Clans/Players.yml");
 		//Load Data From Files
 		loadData();
-	
+
 	}
 	public void onDisable() {
 		log.info("Clans disabled.");
 	}
-	
-	
+
+
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
 	{
 		String commandName = cmd.getName().toLowerCase();
@@ -88,30 +88,68 @@ public class Clans {
                      *	TEAM INVITE - Invites a player to the team
                      * ============================================================================== */   
             		case "INVITE": 
-            			if(args.length < 2){ //NOT ENOGUH ARGS
-            				player.sendMessage(ChatColor.RED + "You didn't invite anyone.");
+            			if(args.length < 2){ //NOT ENOUGH ARGS
+            				player.sendMessage(ChatColor.RED + "You didn't invite anyone");
             				return true;
             			}
             			else if(!tPlayer.hasTeam()){ //NO TEAM
-            				player.sendMessage(ChatColor.RED + "Must have a team to be able to invite to one.");
+            				player.sendMessage(ChatColor.RED + "Must have a team to be able to invite to one");
             				return true;
             			}
             			else if (!getRank(PlayerName).canInvite()) { //NOT ALLOWED TO INVITE
             				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to invite on this team");
             				return true;
             			}
-            			else {
-            				//invite player
+            			
+            			else if(!Users.containsKey(args[2])){ // INVITED NAME DOESN'T EXIST
+            				player.sendMessage(ChatColor.RED + "That player does not exist");
+            				return true;
+            			}
+            			else{
+            				TeamPlayer invitedPlayer = Users.get(args[2]);
+            				if(invitedPlayer.hasTeam()){ // INVITED PLAYER HAS A TEAM
+            					player.sendMessage(ChatColor.RED + "Cannot invite: This player has a team already");
+            					return true;
+            				}
+            				else{ // GIVE INVITE TO INVITED PLAYER
+            					invitedPlayer.setInvite(tPlayer.getTeamKey());
+            				}
             			}
             			break;
                 	/* ==============================================================================
                 	 *	TEAM ACCEPT - Accepts an invite
                 	 * ============================================================================== */           		
-            		case "ACCEPT": break;
+            		case "ACCEPT": 
+            			if(args.length != 1){ // TOO MANY ARGUMENTS
+            				player.sendMessage(ChatColor.RED + "Invalid use of command. Proper use is /team accept");
+            			}           			
+            			else if(tPlayer.hasTeam()){ // PLAYER HAS A TEAM
+            				player.sendMessage(ChatColor.RED + "You are already on a team");
+            			}
+            			else if(tPlayer.getInvite() == ""){ //PLAYER HAS NO INVITATIONS
+            				player.sendMessage(ChatColor.RED + "You have not been invited to a team");
+            			}
+            			
+            			else {
+            				//add to team
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM REJECT - Rejects an invite
                 	 * ============================================================================== */            		
-            		case "REJECT": break;
+            		case "REJECT": 
+            			//we will check to see if they have an invite, if they do, we will clear all invites and send message
+            			if(args.length != 1){     
+            				player.sendMessage(ChatColor.RED + "Invalid use of command. Proper use is /team reject");
+             			}
+            			else if(tPlayer.getInvite() == ""){
+        					player.sendMessage(ChatColor.RED + "You do not have an invite to reject");
+        				}
+        				else{
+        					player.sendMessage(ChatColor.RED + "You have rejected the offer from '" + tPlayer.getInvite() + "'.");
+        					tPlayer.setInvite(""); //or null?
+        				}        				
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM LIST - Lists all teams
                 	 * ============================================================================== */
@@ -235,8 +273,8 @@ public class Clans {
             	}
             }
             
-		
-		
+
+
         }
         return true;
 	}
@@ -273,8 +311,8 @@ public class Clans {
         {
         	//TODO: Load Player data into Users
         }
-		
-		
+
+
 		/*
 		 * LOAD TEAMS FROM FILE
 		 * 
@@ -352,10 +390,10 @@ public class Clans {
 		TeamPlayer tPlayer = Users.get(PlayerName);
 		return Teams.get(tPlayer.getTeamKey()).getRank(PlayerName);
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 }

@@ -1,14 +1,16 @@
 package com.Kingdoms.Clans;
 
 import java.util.Calendar;
+import java.util.ArrayList;
 
 public class TeamPlayer {
-	
+
 	private int ELO;
 	Calendar LastSeen;
-	
+
 	private String TeamKey;
 	private String Invite;
+	
 	
 	//For Loading from a file at start up
 	TeamPlayer(int ELOin, Calendar LastSeenin)
@@ -43,5 +45,11 @@ public class TeamPlayer {
 		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
         return cal;
 	}
-	
+	public void setInvite(String invitingTeam){
+		Invite = invitingTeam;
+	}
+	public String getInvite(){
+		return Invite;
+	}
+
 }
