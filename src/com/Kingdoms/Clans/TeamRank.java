@@ -13,6 +13,7 @@ public class TeamRank {
 	private boolean canKick;
 	private boolean canTeamChat;
 	private boolean canSeeAreaInfo;
+	private boolean canEditMOTD;
 	
 	public TeamRank(String name)
 	{
@@ -23,6 +24,7 @@ public class TeamRank {
 		canKick = false;
 		canTeamChat = true;
 		canSeeAreaInfo = false;
+		canEditMOTD = false;
 	}
 	//Read in from file
 	public TeamRank(String name, HashMap<String,Boolean> perms)
@@ -34,6 +36,7 @@ public class TeamRank {
 		canKick = perms.get("Kick");
 		canTeamChat = perms.get("TeamChat");
 		canSeeAreaInfo = perms.get("AreaInfo");
+		canEditMOTD = perms.get("MOTD");
 	}
 	public void makeTopRank()
 	{
@@ -43,6 +46,7 @@ public class TeamRank {
 		canKick = true;
 		canTeamChat = true;
 		canSeeAreaInfo = true;
+		canEditMOTD = true;
 	}
 	public String getRankName() {
 		return RankName;
@@ -86,8 +90,12 @@ public class TeamRank {
 	public void setCanSeeAreaInfo(boolean canSeeAreaInfo) {
 		this.canSeeAreaInfo = canSeeAreaInfo;
 	}
-	
-	
+	public boolean canEditMOTD(){
+		return canEditMOTD;
+	}
+	public void setCanEditMOTD(boolean canEditMOTD){
+		this.canEditMOTD = canEditMOTD;
+	}
 	
 	
 }
