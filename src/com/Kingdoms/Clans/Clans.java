@@ -131,7 +131,9 @@ public class Clans {
             			}
             			
             			else {
-            				//add to team
+            				//helper function - adds teamkey and adds player to team in one function
+            				teamAdd(PlayerName);
+            				
             			}
             			break;
                 	/* ==============================================================================
@@ -147,7 +149,7 @@ public class Clans {
         				}
         				else{
         					player.sendMessage(ChatColor.RED + "You have rejected the offer from '" + tPlayer.getInvite() + "'.");
-        					tPlayer.setInvite(""); //or null?
+        					tPlayer.clearInvite();
         				}        				
             			break;
                 	/* ==============================================================================
@@ -184,7 +186,19 @@ public class Clans {
                 	/* ==============================================================================
                 	 *	TEAM LEAVE - Leave a team
                 	 * ============================================================================== */
-            		case "LEAVE": break;
+            		case "LEAVE": 
+            			if(args.length != 1){ // TOO MANY ARGUMENTS
+            				player.sendMessage(ChatColor.RED + "Invalid use of command. Proper use is /team leave");
+            			}           			
+            			else if(!tPlayer.hasTeam()){ // PLAYER DOES NOT HAVE A TEAM
+            				player.sendMessage(ChatColor.RED + "You are not in a team");
+            			}
+            			else{
+            				Team team = Teams.get(tPlayer.getTeamKey());
+            				//if team size = 1
+            				tPlayer.clearTeamKey();
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM TK - Toggles friendly fire
                 	 * ============================================================================== */
@@ -200,7 +214,28 @@ public class Clans {
                 	/* ==============================================================================
                 	 *	TEAM KICK - Kicks a player from a team
                 	 * ============================================================================== */
-            		case "KICK": break;
+            		case "KICK": 
+            			if(args.length < 2){ //NOT ENOUGH ARGS
+            				player.sendMessage(ChatColor.RED + "You didn't kick anyone");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){ //NO TEAM
+            				player.sendMessage(ChatColor.RED + "Must have a team to be able to use that command");
+            				return true;
+            			}
+            			else if (!getRank(PlayerName).canKick()) { //NOT ALLOWED TO KICK
+            				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to kick on this team");
+            				return true;
+            			}
+            			
+            			else if(!Users.containsKey(args[2])){ // KICKED NAME DOESN'T EXIST
+            				player.sendMessage(ChatColor.RED + "That player does not exist");
+            				return true;
+            			}
+            			else{
+            				//kick out of team
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM RCREATE | RANKCREATE - Creates a new rank at the bottom of the team
                 	 * ============================================================================== */
@@ -232,7 +267,9 @@ public class Clans {
                 	/* ==============================================================================
                 	 *	TEAM DISBAND - Disbands the entire team
                 	 * ============================================================================== */
-            		case "DISBAND": break;
+            		case "DISBAND": 
+            			
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM TAG - Sets a team's tag
                 	 * ============================================================================== */
@@ -240,11 +277,33 @@ public class Clans {
                 	/* ==============================================================================
                 	 *	TEAM COLOR | COLOUR - Sets a team's color
                 	 * ============================================================================== */
-            		case "COLOR": case "COLOUR": break;
+            		case "COLOR": case "COLOUR": 
+            			
+            			break;
                 	/* ==============================================================================
-                	 *	TEAM MOTD - Set's a team's Message of the Day, prints if no argument
+                	 *	TEAM MOTD - Set's a team's Message of the Day, prints if no argument 
                 	 * ============================================================================== */
-            		case "MOTD": break;
+            		case "MOTD": 
+            			if(!tPlayer.hasTeam()){ //NO TEAM
+            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            			}
+            			else{
+            				Team team = Teams.get(tPlayer.getTeamKey());
+            				if(args.length == 1){ //DISPLAY MOTD
+            					player.sendMessage(ChatColor.GREEN + team.getMOTD());
+            				}
+            				else if(!getRank(PlayerName).canEditMOTD()){ //CANT EDIT MOTD
+            					player.sendMessage(ChatColor.RED + "You lack sufficient permissions to edit the MOTD");
+            				}
+            				else{
+            					String MOTD = args[1];
+            					int i;
+            					for(i=2;i<args.length;i++)
+            						MOTD += " " + args[i];
+            					team.setMOTD(MOTD);	
+            				}
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM HELP - Prints commands and how to use them
                 	 * ============================================================================== */
@@ -391,7 +450,13 @@ public class Clans {
 		return Teams.get(tPlayer.getTeamKey()).getRank(PlayerName);
 	}
 
-
+	private void teamAdd(String PlayerName){
+		TeamPlayer tPlayer = Users.get(PlayerName);
+		tPlayer.setTeamKey(tPlayer.getInvite());
+		Team team = Teams.get(tPlayer.getTeamKey());
+		team.addMember(PlayerName);
+		tPlayer.clearInvite();
+	}
 
 
 
