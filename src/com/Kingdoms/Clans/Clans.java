@@ -90,30 +90,30 @@ public class Clans {
                      * ============================================================================== */   
             		case "INVITE": 
             			if(args.length < 2){ //NOT ENOUGH ARGS
-            				player.sendMessage(ChatColor.RED + "You didn't invite anyone");
+            				player.sendMessage(ChatColor.RED + "You didn't invite anyone.");
             				return true;
             			}
             			else if(!tPlayer.hasTeam()){ //NO TEAM
-            				player.sendMessage(ChatColor.RED + "Must have a team to be able to invite to one");
+            				player.sendMessage(ChatColor.RED + "Must have a team to be able to invite to one.");
             				return true;
             			}
             			else if (!getRank(PlayerName).canInvite()) { //NOT ALLOWED TO INVITE
-            				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to invite on this team");
+            				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to invite on this team.");
             				return true;
             			}
             			
             			else if(!Users.containsKey(args[2])){ // INVITED NAME DOESN'T EXIST
-            				player.sendMessage(ChatColor.RED + "That player does not exist");
+            				player.sendMessage(ChatColor.RED + "That player does not exist.");
             				return true;
             			}
             			else{
             				TeamPlayer invitedPlayer = Users.get(args[2]);
             				if(invitedPlayer.hasTeam()){ // INVITED PLAYER HAS A TEAM
-            					player.sendMessage(ChatColor.RED + "Cannot invite: This player has a team already");
+            					player.sendMessage(ChatColor.RED + "Cannot invite: This player has a team already.");
             					return true;
             				}
             				else{ // GIVE INVITE TO INVITED PLAYER
-            					invitedPlayer.setInvite(tPlayer.getTeamKey());
+            					Users.get(args[2]).setInvite(tPlayer.getTeamKey());
             				}
             			}
             			break;
@@ -123,18 +123,20 @@ public class Clans {
             		case "ACCEPT": 
             			if(args.length != 1){ // TOO MANY ARGUMENTS
             				player.sendMessage(ChatColor.RED + "Invalid use of command. Proper use is /team accept");
+            				return true;
             			}           			
             			else if(tPlayer.hasTeam()){ // PLAYER HAS A TEAM
-            				player.sendMessage(ChatColor.RED + "You are already on a team");
+            				player.sendMessage(ChatColor.RED + "You are already on a team.");
+            				return true;
             			}
             			else if(tPlayer.getInvite() == ""){ //PLAYER HAS NO INVITATIONS
-            				player.sendMessage(ChatColor.RED + "You have not been invited to a team");
+            				player.sendMessage(ChatColor.RED + "You have not been invited to a team.");
+            				return true;
             			}
             			
             			else {
             				//helper function - adds teamkey and adds player to team in one function
             				teamAdd(PlayerName);
-            				
             			}
             			break;
                 	/* ==============================================================================
@@ -144,13 +146,15 @@ public class Clans {
             			//we will check to see if they have an invite, if they do, we will clear all invites and send message
             			if(args.length != 1){     
             				player.sendMessage(ChatColor.RED + "Invalid use of command. Proper use is /team reject");
+            				return true;
              			}
             			else if(tPlayer.getInvite() == ""){
-        					player.sendMessage(ChatColor.RED + "You do not have an invite to reject");
+        					player.sendMessage(ChatColor.RED + "You do not have an invite to reject.");
+        					return true;
         				}
         				else{
         					player.sendMessage(ChatColor.RED + "You have rejected the offer from '" + tPlayer.getInvite() + "'.");
-        					tPlayer.clearInvite();
+        					Users.get(PlayerName).clearInvite();
         				}        				
             			break;
                 	/* ==============================================================================
@@ -195,9 +199,9 @@ public class Clans {
             				player.sendMessage(ChatColor.RED + "You are not in a team");
             			}
             			else{
-            				Team team = Teams.get(tPlayer.getTeamKey());
             				//if team size = 1
-            				tPlayer.clearTeamKey();
+            				teamRemove(PlayerName);
+
             			}
             			break;
                 	/* ==============================================================================
@@ -235,6 +239,7 @@ public class Clans {
             			}
             			else{
             				//kick out of team
+            				teamRemove(PlayerName);
             			}
             			break;
                 	/* ==============================================================================
@@ -294,14 +299,14 @@ public class Clans {
             					player.sendMessage(ChatColor.GREEN + team.getMOTD());
             				}
             				else if(!team.isLeader(PlayerName)){ //NOT TEAM LEADER
-            					player.sendMessage(ChatColor.RED + "Must be the team leader to edit the MOTD");
+            					player.sendMessage(ChatColor.RED + "Must be the team leader to edit the MOTD.");
             				}
             				else{
             					String MOTD = args[1];
             					int i;
             					for(i=2;i<args.length;i++)
             						MOTD += " " + args[i];
-            					team.setMOTD(MOTD);	
+            					Teams.get(tPlayer.getTeamKey()).setMOTD(MOTD);	
             				}
             			}
             			break;
@@ -462,13 +467,16 @@ public class Clans {
 		TeamPlayer tPlayer = Users.get(PlayerName);
 		return Teams.get(tPlayer.getTeamKey()).getRank(PlayerName);
 	}
-
 	private void teamAdd(String PlayerName){
 		TeamPlayer tPlayer = Users.get(PlayerName);
-		tPlayer.setTeamKey(tPlayer.getInvite());
-		Team team = Teams.get(tPlayer.getTeamKey());
-		team.addMember(PlayerName);
-		tPlayer.clearInvite();
+		Users.get(PlayerName).setTeamKey(tPlayer.getInvite());
+		Teams.get(tPlayer.getTeamKey()).addMember(PlayerName);
+		Users.get(PlayerName).clearInvite();
+	}
+	private void teamRemove(String PlayerName){
+		TeamPlayer tPlayer = Users.get(PlayerName);
+		Teams.get(tPlayer.getTeamKey()).removeMember(PlayerName);
+		Users.get(PlayerName).clearTeamKey();
 	}
 	public boolean hasUser(String PlayerName)
 	{
