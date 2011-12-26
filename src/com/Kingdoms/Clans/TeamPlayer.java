@@ -42,7 +42,10 @@ public class TeamPlayer {
 	public void clearTeamKey(){
 		TeamKey = "";
 	}
-	
+	public void updateLastSeen()
+	{
+		LastSeen = getCurrentDate();
+	}
 	private Calendar getCurrentDate()
 	{
 		Calendar cal = Calendar.getInstance();

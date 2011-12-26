@@ -47,10 +47,12 @@ public class Team {
 	
 	public boolean isLeader(String PlayerName)
 	{
-	return TeamList.get(0).containsMember(PlayerName);
+		return TeamList.get(0).containsMember(PlayerName);
 	}
-
-	
+	public int getLeaderCount()
+	{
+		return TeamList.get(0).getTierSize();
+	}
 	public void addMember(String PlayerName)
 	{
 		int LastRankNumber = TeamList.size()-1;
@@ -109,10 +111,6 @@ public class Team {
 	public TeamRank getRank(int RankNumber)
 	{
 		return TeamList.get(RankNumber-1).getRank();
-	}
-	public boolean isLeader(String PlayerName)
-	{
-		return TeamList.get(0).containsMember(PlayerName);
 	}
 	private ChatColor interpretColor(String Colorin) {
 

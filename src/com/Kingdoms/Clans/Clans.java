@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Logger;
@@ -343,12 +344,12 @@ public class Clans {
 		 * LOAD PLAYERS FROM FILE
 		 * 
 		 */
-		ArrayList<HashMap<String,String>> pl = null;
+		HashMap<String,HashMap<String,String>> pl = null;
 		Yaml yamlPlayers = new Yaml();
 		Reader reader = null;
         try {
             reader = new FileReader(PlayersFile);
-            pl = (ArrayList<HashMap<String,String>>)yamlPlayers.load(reader);
+            pl = (HashMap<String,HashMap<String,String>>)yamlPlayers.load(reader);
         } catch (final FileNotFoundException fnfe) {
         	 System.out.println("Players.YML Not Found!");
         	   try{
@@ -369,6 +370,18 @@ public class Clans {
         if(pl != null)
         {
         	//TODO: Load Player data into Users
+        	for(String key : pl.keySet())
+        	{
+        		HashMap<String,String> PlayerData = pl.get(key);
+        		String[] sDate = PlayerData.get("LastOnline").split("/");
+        		int month = Integer.parseInt(sDate[0]);
+        		int day = Integer.parseInt(sDate[1]);
+        		int year = Integer.parseInt(sDate[2]);
+        		Calendar cal = Calendar.getInstance();
+        		cal.set(year, month, day);
+        		int elo = Integer.parseInt(PlayerData.get("ELO"));
+        		Users.put(key, new TeamPlayer(elo, cal));
+        	}
         }
 
 
@@ -402,7 +415,7 @@ public class Clans {
        //CREATE TEAMS ONE AT A TIME
        if(h != null)
        {  
-    	   System.out.println(h.toString());
+    	   //System.out.println(h.toString());
     	   for(String key : h.keySet())
     	   {
     		  ///Get Hashmap containing all Team Data
@@ -457,7 +470,18 @@ public class Clans {
 		team.addMember(PlayerName);
 		tPlayer.clearInvite();
 	}
-
+	public boolean hasUser(String PlayerName)
+	{
+		return Users.containsKey(PlayerName);
+	}
+	public void makeUser(String PlayerName)
+	{
+		Users.put(PlayerName, new TeamPlayer());
+	}
+	public void updateUserDate(String PlayerName)
+	{
+		Users.get(PlayerName).updateLastSeen();
+	}
 
 
 
