@@ -44,6 +44,13 @@ public class Team {
 		TeamTag = "";
 		TeamColor = interpretColor("GRAY");
 	}
+	
+	public boolean isLeader(String PlayerName)
+	{
+	return TeamList.get(0).containsMember(PlayerName);
+	}
+
+	
 	public void addMember(String PlayerName)
 	{
 		int LastRankNumber = TeamList.size()-1;
