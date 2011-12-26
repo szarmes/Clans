@@ -49,6 +49,14 @@ public class Team {
 		int LastRankNumber = TeamList.size()-1;
 		TeamList.get(LastRankNumber).add(PlayerName);
 	}
+	
+	public String getMOTD(){
+		return TeamMOTD;
+	}
+	public void setMOTD(String MOTDin){
+		TeamMOTD = MOTDin;		
+	}
+	
 	public void removeMember(String PlayerName)
 	{
 		int RankCount = TeamList.size();

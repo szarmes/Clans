@@ -1,7 +1,7 @@
 package com.Kingdoms.Clans;
 
 import java.util.Calendar;
-import java.util.ArrayList;
+
 
 public class TeamPlayer {
 
@@ -39,6 +39,10 @@ public class TeamPlayer {
 	public String getTeamKey() {
 		return TeamKey;
 	}
+	public void clearTeamKey(){
+		TeamKey = "";
+	}
+	
 	private Calendar getCurrentDate()
 	{
 		Calendar cal = Calendar.getInstance();
@@ -51,5 +55,7 @@ public class TeamPlayer {
 	public String getInvite(){
 		return Invite;
 	}
-
+	public void clearInvite(){
+		Invite = "";
+	}
 }
