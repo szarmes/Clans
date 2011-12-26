@@ -95,6 +95,10 @@ public class Team {
 	{
 		return TeamList.get(RankNumber-1).getRank();
 	}
+	public boolean isLeader(String PlayerName)
+	{
+		return TeamList.get(0).containsMember(PlayerName);
+	}
 	private ChatColor interpretColor(String Colorin) {
 
 		ChatColor c;
