@@ -4,8 +4,8 @@ import java.util.HashSet;
 
 public class TierList {
 	
-	TeamRank Rank;
-	HashSet<String> RankMembers;
+	private TeamRank Rank;
+	private HashSet<String> RankMembers;
 	
 	//Newly Created
 	public TierList(TeamRank r)
@@ -41,4 +41,8 @@ public class TierList {
 	public void setRank(TeamRank rank) {
 		Rank = rank;
 	}	
+	public int getTierSize()
+	{
+		return RankMembers.size();
+	}
 }
