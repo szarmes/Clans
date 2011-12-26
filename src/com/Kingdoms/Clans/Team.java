@@ -112,6 +112,24 @@ public class Team {
 	{
 		return TeamList.get(RankNumber-1).getRank();
 	}
+	public ChatColor getColor()
+	{
+		return TeamColor;
+	}
+	public String getTeamInfo()
+	{
+		String info = "";
+		int TeamSize = 0;
+		String List = "";
+		for(TierList tl : TeamList)
+		{
+			TeamSize += tl.getTierSize();
+			List += TeamColor + tl.getRank().getRankName() + ":" + ChatColor.GRAY + tl.membersToString() + "\n";
+		}
+		info += TeamColor + "Team Members: " + TeamSize + "\n" + List;
+		
+		return info;
+	}
 	private ChatColor interpretColor(String Colorin) {
 
 		ChatColor c;

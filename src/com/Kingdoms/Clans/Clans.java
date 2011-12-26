@@ -165,15 +165,19 @@ public class Clans {
                 	 *	TEAM INFO - Prints info about a team
                 	 * ============================================================================== */
             		case "INFO": 
-            			if(args.length < 2) {
+            			if(args.length == 1) {
             				//check to see if they have a team
-            				 if(tPlayer.hasTeam()){
-            					 //get team info, should just call a print command from Teams.java
-            				 }
-            				 else
+            				 if(!tPlayer.hasTeam()){
             					 player.sendMessage(ChatColor.RED + "You are not in a team. Use /team info <TEAMNAME> to look up a team's info.");
+            					 return true;
+            				 }
+            				 else {
+            					 Team team = Teams.get(tPlayer.getTeamKey());
+            					 player.sendMessage(team.getColor() + "[" + tPlayer.getTeamKey() + "]" + " Team Info" );
+            					 player.sendMessage(team.getTeamInfo());
+            				 }	 
             			}
-            			else{
+            			else {
             				//check to see if other teams exist
             				int i;
             				String TeamName = args[1];
@@ -200,6 +204,7 @@ public class Clans {
             			}
             			else{
             				//if team size = 1
+            				  //do disband instead
             				teamRemove(PlayerName);
 
             			}

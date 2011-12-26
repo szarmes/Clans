@@ -45,4 +45,14 @@ public class TierList {
 	{
 		return RankMembers.size();
 	}
+	public String membersToString()
+	{
+		String list = "";
+		for(String member : RankMembers)
+		{
+			list += member + ", ";
+		}
+		list.substring(0,list.length()-2);
+		return list;
+	}
 }
