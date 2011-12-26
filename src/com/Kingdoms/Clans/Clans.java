@@ -292,8 +292,8 @@ public class Clans {
             				if(args.length == 1){ //DISPLAY MOTD
             					player.sendMessage(ChatColor.GREEN + team.getMOTD());
             				}
-            				else if(!getRank(PlayerName).canEditMOTD()){ //CANT EDIT MOTD
-            					player.sendMessage(ChatColor.RED + "You lack sufficient permissions to edit the MOTD");
+            				else if(!team.isLeader(PlayerName)){ //NOT TEAM LEADER
+            					player.sendMessage(ChatColor.RED + "Must be the team leader to edit the MOTD");
             				}
             				else{
             					String MOTD = args[1];
@@ -436,11 +436,11 @@ public class Clans {
     	   }
        }
 	}
-	private void saveAllData()
+	private void saveTeams()
 	{
 		//Print Clans and Players to Files.
 	}
-	private void savePlayersData()
+	private void savePlayers()
 	{
 		//Print Clans and Players to Files.
 	}
