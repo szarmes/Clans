@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -135,7 +136,6 @@ public class Clans {
             			}
             			
             			else {
-            				//helper function - adds teamkey and adds player to team in one function
             				teamAdd(PlayerName);
             			}
             			break;
@@ -160,7 +160,18 @@ public class Clans {
                 	/* ==============================================================================
                 	 *	TEAM LIST - Lists all teams
                 	 * ============================================================================== */
-            		case "LIST": break;
+            		case "LIST": 
+            			if(args.length != 1){
+            				player.sendMessage(ChatColor.RED + "Invalid use of command. Proper use is /team list");
+            			}
+            			else{
+            				for(String key : Teams.keySet()){
+            					Team team = Teams.get(key);
+            					player.sendMessage(team.getColor() + "[" + team.getTeamTag() + "] " 
+            							+ ChatColor.GRAY + key + "( )"); //add team size later
+            		        }
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM INFO - Prints info about a team
                 	 * ============================================================================== */
@@ -183,9 +194,9 @@ public class Clans {
             				String TeamName = args[1];
             				for(i=2;i<args.length;i++)
             					TeamName += " " + args[i];
-            					//if teamname exists
-            				
-            					//else there is no team under that team name
+            				Team team = Teams.get(TeamName);
+            				player.sendMessage(team.getColor() + "[" + TeamName + "]" + " Team Info" );
+            				player.sendMessage(team.getTeamInfo());
             			}
             			break;
             		/* ==============================================================================
@@ -203,10 +214,16 @@ public class Clans {
             				player.sendMessage(ChatColor.RED + "You are not in a team");
             			}
             			else{
-            				//if team size = 1
-            				  //do disband instead
-            				teamRemove(PlayerName);
-
+            				Team team = Teams.get(tPlayer.getTeamKey());
+            				if(team.isLeader(PlayerName)){	
+            					if(team.getLeaderCount() == 1){
+            						player.sendMessage(ChatColor.RED + "Must promote someone else to leader before leaving.");
+            					}
+            					else
+            						teamRemove(PlayerName);
+            				}
+            				else
+            					teamRemove(PlayerName);
             			}
             			break;
                 	/* ==============================================================================
@@ -279,12 +296,34 @@ public class Clans {
                 	 *	TEAM DISBAND - Disbands the entire team
                 	 * ============================================================================== */
             		case "DISBAND": 
-            			
             			break;
                 	/* ==============================================================================
                 	 *	TEAM TAG - Sets a team's tag
                 	 * ============================================================================== */
-            		case "TAG": break;
+            		case "TAG": 
+            			if(!tPlayer.hasTeam()){ //NO TEAM
+            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            			}
+            			else{
+            				Team team = Teams.get(tPlayer.getTeamKey());
+            				if(!team.isLeader(PlayerName)){
+            					player.sendMessage(ChatColor.RED + "Must be team leader to edit tag.");
+            				}
+            				else if(args.length == 1){
+            					player.sendMessage(ChatColor.RED + "Your current tag is [" + team.getTeamTag() + "]. /team tag <edit> to change tag.");
+            				}
+            				else if(args.length > 2){
+            					player.sendMessage(ChatColor.RED + "Tags must be one word.");
+            				}
+            				else if(args[2].length() > 7){
+            					player.sendMessage(ChatColor.RED + "Tags must be less than seven characters.");
+            				}
+            				else{
+            					Teams.get(tPlayer.getTeamKey()).setTeamTag(args[2]);
+            					player.sendMessage(ChatColor.RED +"Tag has been changed.");
+            				}
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM COLOR | COLOUR - Sets a team's color
                 	 * ============================================================================== */
