@@ -9,17 +9,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.logging.Logger;
-
+import org.bukkit.event.Event;
+import org.bukkit.event.Event.Priority;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.Yaml;
 
-public class Clans {
+
+
+public class Clans extends JavaPlugin {
 
 	//Clans Data
 	public static HashMap<String, TeamPlayer> Users = new HashMap<String, TeamPlayer>();
@@ -27,15 +30,23 @@ public class Clans {
 	public static HashMap<String, TeamArea> TeamAreas = new HashMap<String, TeamArea>();
 
 	//Files
-	File TeamsFile;
-	File PlayersFile;
+	private File TeamsFile;
+	private File PlayersFile;
 
 	//Logger
-	Logger log = Logger.getLogger("Minecraft");//Define your logger
+	private Logger log = Logger.getLogger("Minecraft");//Define your logger
+	
+	//Listeners
+	private final ClansPlayerListener playerListener = new ClansPlayerListener(this);
+	
+	
 
 
 	public void onEnable() {
-
+		
+		PluginManager pm = this.getServer().getPluginManager();
+        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+        
 		//Team File
 		TeamsFile = new File("plugins/Clans/Teams.yml");
 		//Players File
