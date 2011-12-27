@@ -130,6 +130,14 @@ public class Team {
 		
 		return info;
 	}
+	
+	public String getTeamTag(){
+		return "";
+	}
+	
+	public void setTeamTag(String Tagin){
+		TeamTag = Tagin;
+	}
 	private ChatColor interpretColor(String Colorin) {
 
 		ChatColor c;
