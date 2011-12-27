@@ -114,18 +114,18 @@ public class Clans extends JavaPlugin {
             				return true;
             			}
             			
-            			else if(!Users.containsKey(args[2])){ // INVITED NAME DOESN'T EXIST
+            			else if(!Users.containsKey(args[1])){ // INVITED NAME DOESN'T EXIST
             				player.sendMessage(ChatColor.RED + "That player does not exist.");
             				return true;
             			}
             			else{
-            				TeamPlayer invitedPlayer = Users.get(args[2]);
+            				TeamPlayer invitedPlayer = Users.get(args[1]);
             				if(invitedPlayer.hasTeam()){ // INVITED PLAYER HAS A TEAM
             					player.sendMessage(ChatColor.RED + "Cannot invite: This player has a team already.");
             					return true;
             				}
             				else{ // GIVE INVITE TO INVITED PLAYER
-            					Users.get(args[2]).setInvite(tPlayer.getTeamKey());
+            					Users.get(args[1]).setInvite(tPlayer.getTeamKey());
             				}
             			}
             			break;
@@ -266,13 +266,13 @@ public class Clans extends JavaPlugin {
             				return true;
             			}
             			
-            			else if(!Users.containsKey(args[2])){ // KICKED NAME DOESN'T EXIST
+            			else if(!Users.containsKey(args[1])){ // KICKED NAME DOESN'T EXIST
             				player.sendMessage(ChatColor.RED + "That player does not exist");
             				return true;
             			}
             			else{
             				//kick out of team
-            				teamRemove(PlayerName);
+            				teamRemove(args[1]);
             			}
             			break;
                 	/* ==============================================================================
@@ -326,11 +326,11 @@ public class Clans extends JavaPlugin {
             				else if(args.length > 2){
             					player.sendMessage(ChatColor.RED + "Tags must be one word.");
             				}
-            				else if(args[2].length() > 7){
+            				else if(args[1].length() > 7){
             					player.sendMessage(ChatColor.RED + "Tags must be less than seven characters.");
             				}
             				else{
-            					Teams.get(tPlayer.getTeamKey()).setTeamTag(args[2]);
+            					Teams.get(tPlayer.getTeamKey()).setTeamTag(args[1]);
             					player.sendMessage(ChatColor.RED +"Tag has been changed.");
             				}
             			}
