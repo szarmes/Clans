@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>plugin.yml</name>
+			<type>1</type>
+			<location>C:/Users/Steve/Dropbox/Projects/Minecraft/Clans/plugin.yml</location>
+		</link>
+	</linkedResources>
 </projectDescription>

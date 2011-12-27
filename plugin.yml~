@@ -1,0 +1,15 @@
+name: Clans
+main: com.bukkit.Satros.Clans.Clans
+version: 1.7
+commands:
+  team:
+    description: Creates a team
+    usage: |
+           Incorrect usage of /<command>. Examples:
+           /<command> - lists commands
+  t:
+    description: Sends a message to team members
+    usage: |
+           Incorrect usage of /<command>. Examples:
+           /<command> - lists commands
+

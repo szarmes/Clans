@@ -50,7 +50,7 @@ public class Clans extends JavaPlugin {
 		//Team File
 		TeamsFile = new File("plugins/Clans/Teams.yml");
 		//Players File
-		TeamsFile = new File("plugins/Clans/Players.yml");
+		PlayersFile = new File("plugins/Clans/Players.yml");
 		//Load Data From Files
 		loadData();
 
@@ -409,7 +409,6 @@ public class Clans extends JavaPlugin {
 		Reader reader = null;
         try {
             reader = new FileReader(PlayersFile);
-            pl = (HashMap<String,HashMap<String,String>>)yamlPlayers.load(reader);
         } catch (final FileNotFoundException fnfe) {
         	 System.out.println("Players.YML Not Found!");
         	   try{
@@ -421,6 +420,7 @@ public class Clans extends JavaPlugin {
         } finally {
             if (null != reader) {
                 try {
+                    pl = (HashMap<String,HashMap<String,String>>)yamlPlayers.load(reader);
                     reader.close();
                 } catch (final IOException ioe) {
                     System.err.println("We got the following exception trying to clean up the reader: " + ioe);
