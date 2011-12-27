@@ -126,6 +126,8 @@ public class Clans extends JavaPlugin {
             				}
             				else{ // GIVE INVITE TO INVITED PLAYER
             					Users.get(args[1]).setInvite(tPlayer.getTeamKey());
+            					player.sendMessage(ChatColor.Green + "You have invited " + args[1] + " to your team.");
+            					getServer().getPlayer(args[1]).sendMessage(ChatColor.RED + "You have been invited to " + tPlayer.getTeamKey() +". Type /team accept to or /team reject to accept or deny this offer.");
             				}
             			}
             			break;
@@ -147,6 +149,7 @@ public class Clans extends JavaPlugin {
             			}
             			
             			else {
+            				player.sendMessage(ChatColor.GREEN + "You have accepted the invitation from " + tPlayer.getInvite() + ".");
             				teamAdd(PlayerName);
             			}
             			break;
@@ -231,10 +234,14 @@ public class Clans extends JavaPlugin {
             						player.sendMessage(ChatColor.RED + "Must promote someone else to leader before leaving.");
             					}
             					else
+            						player.sendMessage(ChatColor.GREEN + "You have left the team.");
             						teamRemove(PlayerName);
+            					
             				}
-            				else
+            				else{
+            					player.sendMessage(ChatColor.GREEN + "You have left the team.");
             					teamRemove(PlayerName);
+            				}
             			}
             			break;
                 	/* ==============================================================================
@@ -273,6 +280,8 @@ public class Clans extends JavaPlugin {
             			else{
             				//kick out of team
             				teamRemove(args[1]);
+            				player.sendMessage(ChatColor.Green + "You have kicked " + args[1] + " out of the team.");
+        					getServer().getPlayer(args[1]).sendMessage(ChatColor.RED + "You have been kicked out of the team.");
             			}
             			break;
                 	/* ==============================================================================
@@ -362,6 +371,7 @@ public class Clans extends JavaPlugin {
             					for(i=2;i<args.length;i++)
             						MOTD += " " + args[i];
             					Teams.get(tPlayer.getTeamKey()).setMOTD(MOTD);	
+            					player.sendMessage(ChatColor.GREEN + "MOTD has been changed.");
             				}
             			}
             			break;
