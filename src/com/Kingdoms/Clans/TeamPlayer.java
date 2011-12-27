@@ -30,7 +30,7 @@ public class TeamPlayer {
 	}
 	public boolean hasTeam()
 	{
-		return TeamKey.equalsIgnoreCase("");
+		return !(TeamKey.equalsIgnoreCase(""));
 	}
 	public void setTeamKey(String key)
 	{
