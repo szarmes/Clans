@@ -327,15 +327,19 @@ public class Clans extends JavaPlugin {
             		case "RCREATE": case "RANKCREATE": 
             			if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You must be in a team first.");
+            				return true;
             			}
             			else if(!getRank(PlayerName).canEditRanks()){ //CANT EDIT RANKS
             				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to create a rank on this team");
+            				return true;
             			}
             			else if(args.length < 2){ //NO RANK ADDED
             				player.sendMessage(ChatColor.RED + "There is no rank to add.");
+            				return true;
             			}
             			else if(args.length > 2){//MUST BE ONE WORD
             				player.sendMessage(ChatColor.RED + "Ranks must be one word");
+            				return true;
             			}
             			else{ //ADD RANK
             				Teams.get(tPlayer.getTeamKey()).addRank(new TeamRank(args[1]));
@@ -349,30 +353,34 @@ public class Clans extends JavaPlugin {
             		case "RSET": case "RANKSET": 
             			if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You must be in a team first.");
+            				return true;
             			}
             			else if(!getRank(PlayerName).canSetRanks()){ //CANT EDIT RANKS
             				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to set ranks on this team");
+            				return true;
             			}
-            			else if(args.length == 1 || args.length > 4){ //NO RANK ADDED
+            			else if(args.length != 3){ //NO RANK ADDED
             				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rset <teammember> <ranknumber>.");
-            			}
-            			else if(args.length == 2){ //NO RANK ADDED
-            				player.sendMessage(ChatColor.RED + "Apply a ranknumber. Use /team rset <teammember> <ranknumber>.");
+            				return true;
             			}
             			else if(args[2].length() > 1){
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be one digit.");
+            				return true;
             			}
             			else if(args[2].matches("\\d")){
             				player.sendMessage(ChatColor.RED + "Invalid use. <ranknumber> must be a digit.");
+            				return true;
             			}
             			else{
             				Team team = Teams.get(tPlayer.getTeamKey());
             				if(!team.isLeader(PlayerName)){//PLAYER ISNT LEADER
             					if(team.isLeader(args[1])){//CANT ALTER LEADERS
             						player.sendMessage(ChatColor.RED + "Can not set rank of members in rank 1.");
+            						return true;
             					}
             					else if(args[2] == "1"){//CANT SET LEADER AS A PLAYERS RANK
             						player.sendMessage(ChatColor.RED + "Can not set any members to rank 1.");
+            						return true;
             					}
             					else{
             						Teams.get(tPlayer.getTeamKey()).changePlayerRank(args[1],Integer.parseInt(args[2]));
@@ -389,11 +397,43 @@ public class Clans extends JavaPlugin {
                 	/* ==============================================================================
                 	 *	TEAM RRENAME | RANKRENAME - Sets a rank's name
                 	 * ============================================================================== */
-            		case "RRENAME": case "RANKRENAME": break;
+            		case "RRENAME": case "RANKRENAME": 
+            			if(!tPlayer.hasTeam()){ //NO TEAM
+            				player.sendMessage(ChatColor.RED + "You must be in a team first.");
+            				return true;
+            			}
+            			else if(!getRank(PlayerName).canEditRanks()){ //CANT EDIT RANKS
+            				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to rename ranks on this team");
+            				return true;
+            			}
+            			else if(args.length != 3){
+            				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rrename <oldrankname> <newranknumber>.");
+            				return true;
+            			}
+            			else{
+            				Teams.get(tPlayer.getTeamKey()).changeRankName(args[1],args[2]);
+            				player.sendMessage(ChatColor.RED + "Rank name changed.");
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM RMASSMOVE | RANKMASSMOVE - Moves all players of a rank to another
                 	 * ============================================================================== */
-            		case "RMASSMOVE": case "RANKMASSMOVE": break;
+            		case "RMASSMOVE": case "RANKMASSMOVE": 
+            			if(!tPlayer.hasTeam()){ //NO TEAM
+            				player.sendMessage(ChatColor.RED + "You must be in a team first.");
+            			}
+            			else if(!getTeam(PlayerName).isLeader(PlayerName)){
+            				player.sendMessage(ChatColor.RED + "Must be team leader to mass move people to different ranks.");
+            				return true;
+            			}
+            			else if(args.length != 3){
+            				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rmassmove <oldrankname> <newranknumber>.");
+            				return true;
+            			}
+            			else{
+            				//massmove 
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM RINFO | RANKINFO - Prints permissions of a rank
                 	 * ============================================================================== */

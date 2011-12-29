@@ -113,8 +113,6 @@ public class Team {
 		int RankCount = TeamList.size();
 		int i;
 		
-		TeamRank r = new TeamRank("");
-		
 		for(i=0; i<RankCount; i++)
 		{
 			if(TeamList.get(i).containsMember(PlayerName))
@@ -132,7 +130,16 @@ public class Team {
 		TeamList.get(this.getRankNumber(PlayerName)).remove(PlayerName);
 		TeamList.get(RankNumber-1).add(PlayerName);
 	}
-	
+	public void changeRankName(String oldName, String newName){
+		for(TierList tl : TeamList)
+		{
+			if(tl.getRank().getRankName() == oldName){
+				tl.getRank().setRankName(newName);
+				break;
+			}
+			
+		}
+	}
 	public ChatColor getColor()
 	{
 		return TeamColor;
