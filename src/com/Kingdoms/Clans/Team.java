@@ -116,21 +116,25 @@ public class Team {
 	{
 		return TeamColor;
 	}
-	public String getTeamInfo()
+	public ArrayList<String> getTeamInfo()
 	{
-		String info = "";
-		int TeamSize = 0;
-		String List = "";
+		ArrayList<String> teamInfo = new ArrayList<String>();
+		teamInfo.add(TeamColor + "Team Members: " + getTeamSize());
+		int rankNum = 1;
 		for(TierList tl : TeamList)
 		{
-			TeamSize += tl.getTierSize();
-			List += TeamColor + tl.getRank().getRankName() + ":" + ChatColor.GRAY + tl.membersToString() + "\n";
+			teamInfo.add(TeamColor + "" + rankNum + ". "+ tl.getRank().getRankName() + ":" + ChatColor.GRAY + tl.membersToString());
+			rankNum++;
 		}
-		info += TeamColor + "Team Members: " + TeamSize + "\n" + List;
-		
-		return info;
+		return teamInfo;
 	}
-	
+	public int getTeamSize()
+	{
+		int TeamSize = 0;
+		for(TierList tl : TeamList)
+			TeamSize += tl.getTierSize();
+		return TeamSize;
+	}
 	public String getTeamTag(){
 		return "";
 	}
