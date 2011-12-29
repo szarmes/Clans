@@ -104,7 +104,7 @@ public class Team {
 		for(i=0; i<RankCount; i++)
 		{
 			if(TeamList.get(i).containsMember(PlayerName))
-				r = TeamList.get(i).getRank();
+				return TeamList.get(i).getRank();
 		}
 		return r;
 	}
@@ -138,52 +138,120 @@ public class Team {
 	public void setTeamTag(String Tagin){
 		TeamTag = Tagin;
 	}
+	public String getSaveString()
+	{
+		String save = "";
+		save += "    Tag: '" + TeamTag + "'\n";
+		save += "    Color: '" + reverseInterpretColor(TeamColor) + "'\n";
+		save += "    Motd: '" + TeamMOTD + "'\n";
+		save += "    Score: '" + TeamScore + "'\n";
+		save += "    List:\n";
+		int i = 0;
+		for(i=0; i<TeamList.size(); i++)
+		{
+			int r = i+1;
+			save += "        Rank " + r + ":\n";
+			save += TeamList.get(i).getSaveString();
+		}
+		
+		return save;
+	}
 	private ChatColor interpretColor(String Colorin) {
 
 		ChatColor c;
-    	switch(Colorin.toUpperCase())
+		     switch(Colorin.toUpperCase())
+		     {
+		     case "DARK_RED":
+		     c = ChatColor.DARK_RED;
+		     break;
+		     case "RED":
+		     c = ChatColor.RED;
+		     break;
+		     case "DARK_AQUA":
+		     c = ChatColor.DARK_AQUA;
+		     break;
+		     case "AQUA":
+		     c = ChatColor.AQUA;
+		     break;
+		     case "DARK_GREEN":
+		     c = ChatColor.DARK_GREEN;
+		     break;
+		     case "GREEN":
+		     c = ChatColor.GREEN;
+		     break;
+		     case "DARK_BLUE":
+		     c = ChatColor.DARK_BLUE;
+		     break;
+		     case "BLUE":
+		     c = ChatColor.BLUE;
+		     break;
+		     case "DARK_PURPLE":
+		     c = ChatColor.DARK_PURPLE;
+		     break;
+		     case "PURPLE":
+		     c = ChatColor.LIGHT_PURPLE;
+		     break;
+		     case "GOLD":
+		     c = ChatColor.GOLD;
+		     break;
+		     case "YELLOW":
+		     c = ChatColor.YELLOW;
+		     break;
+		     case "BLACK":
+		     c = ChatColor.BLACK;
+		     break;
+		     default:
+		     c = ChatColor.GRAY;
+		     break;
+		     }
+		return c;
+		}
+	private String reverseInterpretColor(ChatColor Colorin) {
+
+		String c = "";
+    	switch(Colorin)
     	{
-    		case "DARK_RED": 
-    			c = ChatColor.DARK_RED;
+    		case DARK_RED: 
+    			c = "DARK_RED";
     			break;
-    		case "RED": 
-    			c = ChatColor.RED;
+    		case RED: 
+    			c = "RED";
     			break;
-    		case "DARK_AQUA": 
-    			c = ChatColor.DARK_AQUA;
+    		case DARK_AQUA: 
+    			c = "DARK_AQUA";
     			break;
-    		case "AQUA": 
-    			c = ChatColor.AQUA;
+    		case AQUA: 
+    			c = "AQUA";
     			break;
-    		case "DARK_GREEN": 
-    			c = ChatColor.DARK_GREEN;
+    		case DARK_GREEN: 
+    			c = "DARK_GREEN";
     			break;
-    		case "GREEN": 
-    			c = ChatColor.GREEN;
+    		case GREEN: 
+    			c = "GREEN";
     			break;
-    		case "DARK_BLUE": 
-    			c = ChatColor.DARK_BLUE;
+    		case DARK_BLUE: 
+    			c = "DARK_BLUE";
     			break;
-    		case "BLUE": 
-    			c = ChatColor.BLUE;
+    		case BLUE: 
+    			c = "BLUE";
     			break;
-    		case "DARK_PURPLE": 
-    			c = ChatColor.DARK_PURPLE;
+    		case DARK_PURPLE: 
+    			c = "DARK_PURPLE";
     			break;
-    		case "PURPLE": 
-    			c = ChatColor.LIGHT_PURPLE;
+    		case LIGHT_PURPLE: 
+    			c = "LIGHT_PURPLE";
     			break;
-    		case "GOLD": 
-    			c = ChatColor.GOLD;
+    		case GOLD: 
+    			c = "GOLD";
     			break;
-    		case "YELLOW": 
-    			c = ChatColor.YELLOW;
+    		case YELLOW: 
+    			c = "YELLOW";
     			break;
-    		case "BLACK": 
-    			c = ChatColor.BLACK;
+    		case BLACK: 
+    			c = "BLACK";
     			break;
     		default:
-    			c =  ChatColor.GRAY;
+    			c =  "GRAY";
     			break;
     	}
 		return c;

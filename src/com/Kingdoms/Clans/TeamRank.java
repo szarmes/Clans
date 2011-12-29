@@ -90,6 +90,15 @@ public class TeamRank {
 	public void setCanSeeAreaInfo(boolean canSeeAreaInfo) {
 		this.canSeeAreaInfo = canSeeAreaInfo;
 	}
+	public String getSaveString()
+	{
+		String save = "";
+		
+		save += "            Rank Name: '"+RankName+"'\n";
+		String perms = "{SetRanks: "+canSetRanks+", " + "EditRanks: "+canEditRanks+", " + "Kick: "+canKick+", " + "TeamChat: "+canTeamChat+", " +"Invite: "+canInvite+", " + "AreaInfo: "+canSeeAreaInfo+"}";
+		save += "            Permissions: "+perms+"\n";
+		return save;
+	}
 	
 	
 }
