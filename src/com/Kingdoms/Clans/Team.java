@@ -108,10 +108,31 @@ public class Team {
 		}
 		return r;
 	}
+	public int getRankNumber(String PlayerName)
+	{
+		int RankCount = TeamList.size();
+		int i;
+		
+		TeamRank r = new TeamRank("");
+		
+		for(i=0; i<RankCount; i++)
+		{
+			if(TeamList.get(i).containsMember(PlayerName))
+				return i;
+		}
+		return -1;
+	}
+	
 	public TeamRank getRank(int RankNumber)
 	{
 		return TeamList.get(RankNumber-1).getRank();
 	}
+	
+	public void changePlayerRank(String PlayerName,int RankNumber){
+		TeamList.get(this.getRankNumber(PlayerName)).remove(PlayerName);
+		TeamList.get(RankNumber-1).add(PlayerName);
+	}
+	
 	public ChatColor getColor()
 	{
 		return TeamColor;
