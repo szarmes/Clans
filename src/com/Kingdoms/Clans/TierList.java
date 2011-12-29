@@ -45,14 +45,24 @@ public class TierList {
 	{
 		return RankMembers.size();
 	}
+	public String getSaveString()
+	{
+		String save = Rank.getSaveString();
+		save += "            Members:\n";
+		for(String player : RankMembers)
+		{
+			save += "                - " + player + "\n";
+		}
+		return save;
+	}
 	public String membersToString()
 	{
 		String list = "";
-		for(String member : RankMembers)
-		{
-			list += member + ", ";
+		if(!RankMembers.isEmpty()) {
+			for(String member : RankMembers)
+				list += member + ", ";
+			list.substring(0,list.length()-2);
 		}
-		list.substring(0,list.length()-2);
 		return list;
 	}
 }

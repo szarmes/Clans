@@ -11,6 +11,8 @@ public class TeamPlayer {
 	private String TeamKey;
 	private String Invite;
 	
+	private boolean canTeamKill;
+	
 	
 	//For Loading from a file at start up
 	TeamPlayer(int ELOin, Calendar LastSeenin)
@@ -19,6 +21,7 @@ public class TeamPlayer {
 		LastSeen = LastSeenin;
 		TeamKey = "";
 		Invite = "";
+		canTeamKill = false;
 	}
 	//When player joins for the first time
 	TeamPlayer()
@@ -27,10 +30,21 @@ public class TeamPlayer {
 		LastSeen = getCurrentDate();
 		TeamKey = "";
 		Invite = "";
+		canTeamKill = false;
+	}
+	public boolean canTeamKill() {
+		return canTeamKill;
+	}
+	public void setCanTeamKill(boolean canTeamKill) {
+		this.canTeamKill = canTeamKill;
 	}
 	public boolean hasTeam()
 	{
 		return !(TeamKey.equalsIgnoreCase(""));
+	}
+	public boolean hasInvite()
+	{
+		return !(Invite.equalsIgnoreCase(""));
 	}
 	public void setTeamKey(String key)
 	{
@@ -60,5 +74,14 @@ public class TeamPlayer {
 	}
 	public void clearInvite(){
 		Invite = "";
+	}
+	public String getSaveString()
+	{
+		String save = "";
+		String date = "LastOnline: '" + LastSeen.get(Calendar.MONTH)+"/"+LastSeen.get(Calendar.DATE)+"/"+LastSeen.get(Calendar.YEAR)+"'";
+		save = "{" + date +"," + "ELO: '" + ELO + "'}";
+		
+		
+		return save;
 	}
 }

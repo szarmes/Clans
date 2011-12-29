@@ -17,4 +17,8 @@ commands:
     usage: |
            Incorrect usage of /<command>. Examples:
            /<command> - lists commands
-
+  rules:
+    description: Lists server rules
+    usage: |
+           Incorrect usage of /<command>. Examples:
+           /<command> - lists commands
