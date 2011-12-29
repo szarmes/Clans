@@ -1,8 +1,10 @@
 package com.Kingdoms.Clans;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -521,11 +523,37 @@ public class Clans extends JavaPlugin {
 	}
 	private void saveTeams()
 	{
-		//Print Clans and Players to Files.
+		//Print Clans to File.
+		try{
+			FileWriter fstream = new FileWriter(TeamsFile, false);
+			BufferedWriter out = new BufferedWriter(fstream);
+			out.write("");
+			for(String key : Teams.keySet())
+			{
+				out.write(key + ":\n");
+				out.write(Teams.get(key).getSaveString());
+			}
+			out.close();
+			fstream.close();
+		}catch (Exception e){//Catch exception if any
+			System.err.println("Error: " + e.getMessage());
+		}
 	}
 	private void savePlayers()
 	{
-		//Print Clans and Players to Files.
+		try{
+			FileWriter fstream = new FileWriter(PlayersFile, false);
+			BufferedWriter out = new BufferedWriter(fstream);
+			out.write("");
+			for(String key : Users.keySet())
+			{
+				out.write(key + ": " + Users.get(key).getSaveString());
+			}
+			out.close();
+			fstream.close();
+		}catch (Exception e){//Catch exception if any
+			System.err.println("Error: " + e.getMessage());
+		}
 	}
 	private TeamRank getRank(String PlayerName)
 	{

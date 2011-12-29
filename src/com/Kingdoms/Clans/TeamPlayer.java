@@ -61,4 +61,13 @@ public class TeamPlayer {
 	public void clearInvite(){
 		Invite = "";
 	}
+	public String getSaveString()
+	{
+		String save = "";
+		String date = "LastOnline: '" + LastSeen.get(Calendar.MONTH)+"/"+LastSeen.get(Calendar.DATE)+"/"+LastSeen.get(Calendar.YEAR)+"'";
+		save = "{" + date +"," + "ELO: '" + ELO + "'}";
+		
+		
+		return save;
+	}
 }

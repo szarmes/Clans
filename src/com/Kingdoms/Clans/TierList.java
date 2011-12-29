@@ -45,6 +45,16 @@ public class TierList {
 	{
 		return RankMembers.size();
 	}
+	public String getSaveString()
+	{
+		String save = Rank.getSaveString();
+		save += "            Members:\n";
+		for(String player : RankMembers)
+		{
+			save += "                - " + player + "\n";
+		}
+		return save;
+	}
 	public String membersToString()
 	{
 		String list = "";
