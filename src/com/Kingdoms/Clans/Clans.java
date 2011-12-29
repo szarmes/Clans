@@ -73,7 +73,7 @@ public class Clans extends JavaPlugin {
             
             if(commandName.equals("team") && args.length >= 1)
             {
-            	switch(args[0].toUpperCase() )
+            	switch(args[0].toUpperCase())
             	{
             		/* ==============================================================================
             		 *	TEAM CREATE - Creates a team.
@@ -363,13 +363,8 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rset <teammember> <ranknumber>.");
             				return true;
             			}
-            			else if(args[2].length() > 1){
-            				player.sendMessage(ChatColor.RED + "Rank Numbers must be one digit.");
-            				return true;
-            			}
-            			else if(args[2].matches("\\d")){
-            				player.sendMessage(ChatColor.RED + "Invalid use. <ranknumber> must be a digit.");
-            				return true;
+            			else if(isInteger(args[2])){
+            				
             			}
             			else{
             				Team team = Teams.get(tPlayer.getTeamKey());
@@ -378,7 +373,7 @@ public class Clans extends JavaPlugin {
             						player.sendMessage(ChatColor.RED + "Can not set rank of members in rank 1.");
             						return true;
             					}
-            					else if(args[2] == "1"){//CANT SET LEADER AS A PLAYERS RANK
+            					else if(Integer.parseInt(args[2]) == 1){//CANT SET LEADER AS A PLAYERS RANK
             						player.sendMessage(ChatColor.RED + "Can not set any members to rank 1.");
             						return true;
             					}
@@ -407,11 +402,14 @@ public class Clans extends JavaPlugin {
             				return true;
             			}
             			else if(args.length != 3){
-            				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rrename <oldrankname> <newranknumber>.");
+            				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rrename <ranknumber> <newrankname>.");
             				return true;
             			}
+            			else if(isInteger(args[1])){
+            				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
+            			}
             			else{
-            				Teams.get(tPlayer.getTeamKey()).changeRankName(args[1],args[2]);
+            				Teams.get(tPlayer.getTeamKey()).changeRankName(Integer.parseInt(args[1]),args[2]);
             				player.sendMessage(ChatColor.RED + "Rank name changed.");
             			}
             			break;
@@ -427,21 +425,49 @@ public class Clans extends JavaPlugin {
             				return true;
             			}
             			else if(args.length != 3){
-            				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rmassmove <oldrankname> <newranknumber>.");
+            				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rmassmove <oldranknumber> <newranknumber>.");
             				return true;
             			}
+            			else if(isInteger(args[1]) && isInteger(args[2])){
+            				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
+            			}
             			else{
-            				//massmove 
+            				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),Integer.parseInt(args[2]));
+            				player.sendMessage(ChatColor.RED + "Ranks moved.");
             			}
             			break;
                 	/* ==============================================================================
                 	 *	TEAM RINFO | RANKINFO - Prints permissions of a rank
                 	 * ============================================================================== */
-            		case "RINFO": case "RANKINFO": break;
+            		case "RINFO": case "RANKINFO": 
+            			//print rank info /team rinfo <ranknumber>
+            			if(!tPlayer.hasTeam()){//NOT IN TEAM
+            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            			}
+            			else if(args.length != 2){
+            				player.sendMessage(ChatColor.RED + "Invalid use of command. Use /team rinfo <ranknumber> to get permissions.");
+            			}
+            			else if(!isInteger(args[1])){
+            				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
+            			}
+            			else{
+            				Team team = Teams.get(tPlayer.getTeamKey());
+            				if(!team.rankExist(Integer.parseInt(args[1]))){
+            					player.sendMessage(ChatColor.RED + "Rank Number does not exist.");
+            				}
+            				else{
+            					ArrayList<String> rankInfo = team.getRankInfo(Integer.parseInt(args[1]));
+           					 	for(String s : rankInfo)
+           					 		player.sendMessage(s);
+            				}
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM RPERMISSION | RANKPERMISSION - Sets a permission of a rank
                 	 * ============================================================================== */
-            		case "RPERMISSION": case "RANKPERMISSION": break;
+            		case "RPERMISSION": case "RANKPERMISSION": 
+            			//set permissions /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true|false>
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM RDELETE | RANKDELETE - Removes a rank and moves all players inside to bottom rank
                 	 * ============================================================================== */
@@ -563,7 +589,7 @@ public class Clans extends JavaPlugin {
             		case "AREA": 
             			break;           			
             	}
-        		return true;
+            	return true;
             }
             else if(commandName.equals("t"))
             {
@@ -613,12 +639,21 @@ public class Clans extends JavaPlugin {
             	player.sendMessage(ChatColor.RED + "2. Do not log out in order to avoid combat with another player.");
             	player.sendMessage(ChatColor.RED + "3. Do not spam chat.");
             	player.sendMessage(ChatColor.RED + "Allowed: Total destruction, looting, and killing.");
-            }            
-
-
+            }
+            else
+            {
+            	return true;
+            }
+        return true;    
+        }   
+        else
+        {
+        	return true;
         }
-        return true;
 	}
+        
+        
+	
 	private void loadData()
 	{
 		/*
@@ -783,6 +818,18 @@ public class Clans extends JavaPlugin {
 		Teams.get(tPlayer.getTeamKey()).removeMember(PlayerName);
 		Users.get(PlayerName).clearTeamKey();
 	}
+	
+	private boolean isInteger( String input )  
+ 	{  
+ 		try  {  
+ 			Integer.parseInt( input );  
+ 			return true;  
+ 		}  
+ 		catch( Exception e )  {  
+ 			return false;  
+ 		}  
+ 	} 
+	
 	public boolean hasUser(String PlayerName)
 	{
 		return Users.containsKey(PlayerName);

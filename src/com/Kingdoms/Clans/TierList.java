@@ -19,6 +19,15 @@ public class TierList {
 		Rank = r;
 		RankMembers = list;
 	}
+	
+	public HashSet<String> getRankMembers() {
+		return RankMembers;
+	}
+	
+	public void clearRankMembers() {
+		RankMembers = new HashSet<String>();
+	}
+
 	public void add(String PlayerName)
 	{
 		RankMembers.add(PlayerName);
