@@ -108,9 +108,37 @@ public class Team {
 		}
 		return r;
 	}
+	public int getRankNumber(String PlayerName)
+	{
+		int RankCount = TeamList.size();
+		int i;
+		
+		for(i=0; i<RankCount; i++)
+		{
+			if(TeamList.get(i).containsMember(PlayerName))
+				return i;
+		}
+		return -1;
+	}
+	
 	public TeamRank getRank(int RankNumber)
 	{
 		return TeamList.get(RankNumber-1).getRank();
+	}
+	
+	public void changePlayerRank(String PlayerName,int RankNumber){
+		TeamList.get(this.getRankNumber(PlayerName)).remove(PlayerName);
+		TeamList.get(RankNumber-1).add(PlayerName);
+	}
+	public void changeRankName(String oldName, String newName){
+		for(TierList tl : TeamList)
+		{
+			if(tl.getRank().getRankName() == oldName){
+				tl.getRank().setRankName(newName);
+				break;
+			}
+			
+		}
 	}
 	public ChatColor getColor()
 	{
