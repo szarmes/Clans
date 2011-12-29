@@ -287,7 +287,9 @@ public class Clans extends JavaPlugin {
                 	/* ==============================================================================
                 	 *	TEAM RCREATE | RANKCREATE - Creates a new rank at the bottom of the team
                 	 * ============================================================================== */
-            		case "RCREATE": case "RANKCREATE": break;
+            		case "RCREATE": case "RANKCREATE": 
+            			
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM RSET | RANKSET - Sets a player's rank
                 	 * ============================================================================== */
