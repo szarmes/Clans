@@ -509,13 +509,13 @@ public class Clans extends JavaPlugin {
     			   
     			   //Add TeamKeys to all Members
     			   for(String PlayerName : (HashSet<String>)Tier.get("Members"))
-    				   //Users.get(PlayerName).setTeamKey(key);
+    				   Users.get(PlayerName).setTeamKey(key);
     			   
     			   //Add Tier to TeamList
     			   TeamList.add(new TierList(newRank, (HashSet<String>)Tier.get("Members")));
     		   }
     		   //Add to Teams
-    		   //Teams.put(key, new Team(TeamList, MOTD, Score, Tag, Color));
+    		   Teams.put(key, new Team(TeamList, MOTD, Score, Tag, Color));
     		   
     		   //TODO: Add Team Area Info
     	   }
