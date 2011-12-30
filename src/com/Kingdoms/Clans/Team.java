@@ -145,6 +145,10 @@ public class Team {
 	{
 		return TeamColor;
 	}
+	public void setColor(String Colorin){
+		TeamColor = interpretColor(Colorin);
+	}
+	
 	public ArrayList<String> getAllMembers()
 	{
 		//Super inefficient! But only needed for disband...
@@ -224,6 +228,41 @@ public class Team {
 		
 		return save;
 	}
+	
+public boolean validateColor(String Colorin){
+	switch(Colorin){
+		case "DARK_RED":
+			return true;
+		case "RED":
+			return true;
+		case "DARK_AQUA":
+			return true;
+		case "AQUA":
+			return true;
+		case "DARK_GREEN":
+			return true;
+		case "GREEN":
+			return true;
+		case "DARK_BLUE":
+			return true;
+		case "BLUE":
+			return true;
+		case "DARK_PURPLE":
+			return true;
+		case "PURPLE":
+			return true;
+		case "GOLD":
+			return true;
+		case "YELLOW":
+			return true;
+		case "BLACK":
+			return true;
+		case "GRAY":
+			return true;
+		default:
+			return false;
+	}
+}
 	
 	private ChatColor interpretColor(String Colorin) {
 

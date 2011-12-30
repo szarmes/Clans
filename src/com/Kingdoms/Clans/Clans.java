@@ -559,8 +559,8 @@ public class Clans extends JavaPlugin {
             				return true;
             			}
             			else{
-            				//THIS CODE IS UGLY.....BUT I AM LAZY
-            				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),Teams.get(tPlayer.getTeamKey()).getRankCount()-1);
+            				Team team = Teams.get(tPlayer.getTeamKey());
+            				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),team.getRankCount()-1);
             				Teams.get(tPlayer.getTeamKey()).removeRank(Integer.parseInt(args[1]));
             				player.sendMessage(ChatColor.RED + "Ranks moved.");
             				saveTeams();
@@ -601,19 +601,19 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Must be team leader to edit tag.");
             				return true;
             			}
-            			else if(args.length == 1){
+            			else if(args.length == 1){//PRINT CURRENT TAG
             				player.sendMessage(ChatColor.GREEN + "Your current tag is [" + getTeam(PlayerName).getTeamTag() + "]. /team tag <NewTag> to change tag.");
             				return true;
             			}
-            			else if(args[1].length() > 2){
+            			else if(args[1].length() > 2){//NOT ENOUGH CHARACTERS
             				player.sendMessage(ChatColor.RED + "Tags must be at least three characters.");
             				return true;
             			}
-            			else if(args[1].length() > 7){
+            			else if(args[1].length() > 7){//TOO MANY CHARACTERS
             				player.sendMessage(ChatColor.RED + "Tags must be less than seven characters.");
             				return true;
             			}
-            			else {
+            			else {//CHANGE TAG
             				Teams.get(tPlayer.getTeamKey()).setTeamTag(args[1]);
             				player.sendMessage(ChatColor.GREEN +"Tag has been changed to [" + getTeam(PlayerName).getTeamTag() + "].");
             				saveTeams();
@@ -627,17 +627,21 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
             				return true;
             			}
-            			else if(!getTeam(PlayerName).isLeader(PlayerName)){
+            			else if(!getTeam(PlayerName).isLeader(PlayerName)){//ISNT LEADER
             				player.sendMessage(ChatColor.RED + "Must be the leader to change the team color.");
             				return true;
             			}
-            			else if(args.length != 2){
-            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            			else if(args.length != 2){//INVALID ARGS
+            				player.sendMessage(ChatColor.RED + "Invalid use of command. Use /team color <colorname>.");
             				return true;
             			}
-            			else{
-            				//CHANGE COLOR
-            				
+            			else if(!Teams.get(tPlayer.getTeamKey()).validateColor(args[1])){ //INVALID COLOR
+            				player.sendMessage(ChatColor.RED + "Invalid color. Choose from this list of colors: DARK_RED, RED, DARK_AQUA," +
+            						"AQUA, DARK_GREEN, GREEN, DARK_BLUE, BLUE, DARK_PURPLE, PURPLE, GOLD, YELLOW, BLACK, GRAY");
+            				return true;
+            			}
+            			else{//SET COLOR
+            				Teams.get(tPlayer.getTeamKey()).setColor(args[1]);
             				saveTeams();
             			}
             			break;
@@ -751,7 +755,7 @@ public class Clans extends JavaPlugin {
 	  				 }         				 
    			 	}
             }
-            else if(commandName.equals("elo"))
+            else if(commandName.equals("elo"))//maybe change ELO to ratings?
             {
             	if(args[0].toUpperCase() == "LIST")
             	{
