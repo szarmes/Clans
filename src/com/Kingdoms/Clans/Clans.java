@@ -369,12 +369,12 @@ public class Clans extends JavaPlugin {
             			else{
             				Team team = Teams.get(tPlayer.getTeamKey());
             				if(!team.isLeader(PlayerName)){//PLAYER ISNT LEADER
-            					if(team.isLeader(args[1])){//CANT ALTER LEADERS
-            						player.sendMessage(ChatColor.RED + "Can not set rank of members in rank 1.");
+            					if(team.getRankNumber(PlayerName) < Integer.parseInt(args[1])){//CANT ALTER LEADERS
+            						player.sendMessage(ChatColor.RED + "Can not set rank of members higher than your own.");
             						return true;
             					}
-            					else if(Integer.parseInt(args[2]) == 1){//CANT SET LEADER AS A PLAYERS RANK
-            						player.sendMessage(ChatColor.RED + "Can not set any members to rank 1.");
+            					else if(Teams.get(tPlayer.getTeamKey()).getRankNumber(PlayerName) < Integer.parseInt(args[2])){//CANT SET LEADER AS A PLAYERS RANK
+            						player.sendMessage(ChatColor.RED + "Can not set any members to a rank higher than your own.");
             						return true;
             					}
             					else{
@@ -407,6 +407,10 @@ public class Clans extends JavaPlugin {
             			}
             			else if(isInteger(args[1])){
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
+            				return true;
+            			}
+            			else if(Teams.get(tPlayer.getTeamKey()).getRankNumber(PlayerName) < Integer.parseInt(args[1])){
+            				player.sendMessage(ChatColor.RED + "Cannot edit ranks higher than your own.");
             			}
             			else{
             				Teams.get(tPlayer.getTeamKey()).changeRankName(Integer.parseInt(args[1]),args[2]);
@@ -419,6 +423,7 @@ public class Clans extends JavaPlugin {
             		case "RMASSMOVE": case "RANKMASSMOVE": 
             			if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You must be in a team first.");
+            				return true;
             			}
             			else if(!getTeam(PlayerName).isLeader(PlayerName)){
             				player.sendMessage(ChatColor.RED + "Must be team leader to mass move people to different ranks.");
@@ -430,6 +435,7 @@ public class Clans extends JavaPlugin {
             			}
             			else if(isInteger(args[1]) && isInteger(args[2])){
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
+            				return true;
             			}
             			else{
             				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),Integer.parseInt(args[2]));
@@ -440,20 +446,23 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM RINFO | RANKINFO - Prints permissions of a rank
                 	 * ============================================================================== */
             		case "RINFO": case "RANKINFO": 
-            			//print rank info /team rinfo <ranknumber>
             			if(!tPlayer.hasTeam()){//NOT IN TEAM
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            				return true;
             			}
             			else if(args.length != 2){
             				player.sendMessage(ChatColor.RED + "Invalid use of command. Use /team rinfo <ranknumber> to get permissions.");
+            				return true;
             			}
             			else if(!isInteger(args[1])){
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
+            				return true;
             			}
             			else{
             				Team team = Teams.get(tPlayer.getTeamKey());
             				if(!team.rankExist(Integer.parseInt(args[1]))){
             					player.sendMessage(ChatColor.RED + "Rank Number does not exist.");
+            					return true;
             				}
             				else{
             					ArrayList<String> rankInfo = team.getRankInfo(Integer.parseInt(args[1]));
@@ -466,12 +475,75 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM RPERMISSION | RANKPERMISSION - Sets a permission of a rank
                 	 * ============================================================================== */
             		case "RPERMISSION": case "RANKPERMISSION": 
-            			//set permissions /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true|false>
+            			if(!tPlayer.hasTeam()){
+            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            				return true;
+            			}
+            			else if(!getRank(PlayerName).canEditRanks()){
+            				player.sendMessage(ChatColor.RED + "You lack sufficent permission to edit rank permissions.");
+            				return true;
+            			}
+            			else if(args.length != 3){
+            				player.sendMessage(ChatColor.RED + "Invalid use of command. Use /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true|false>.");
+            				return true;
+            			}
+            			else if(!isInteger(args[1])){
+            				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
+            				return true;
+            			}
+            			else if(Teams.get(tPlayer.getTeamKey()).getRankNumber(PlayerName) < Integer.parseInt(args[1])){
+            				player.sendMessage(ChatColor.RED + "Cannot edit ranks higher than your own.");
+            			}
+            			else{
+            				switch(args[2].toUpperCase()){
+            				case "KICK":
+            					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanKick(Boolean.parseBoolean(args[3]));
+            					break;
+            				case "TEAMCHAT":
+            					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanTeamChat(Boolean.parseBoolean(args[3]));
+            					break;
+            				case "RANKEDIT":
+            					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanEditRanks(Boolean.parseBoolean(args[3]));
+            					break;
+            				case "INVITE":
+            					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanInvite(Boolean.parseBoolean(args[3]));
+            					break;
+            				case "PROMOTE":
+            					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanSetRanks(Boolean.parseBoolean(args[3]));
+            					break;
+            				default: 
+            					player.sendMessage(ChatColor.RED + "Invalid permission. Use /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true|false>.");
+            					break;
+            				}
+            			}
             			break;
                 	/* ==============================================================================
                 	 *	TEAM RDELETE | RANKDELETE - Removes a rank and moves all players inside to bottom rank
                 	 * ============================================================================== */
-            		case "RDELETE": case "RANKDELETE": break;
+            		case "RDELETE": case "RANKDELETE": 
+            			if(!tPlayer.hasTeam()){
+            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            				return true;
+            			}
+            			else if(Teams.get(tPlayer.getTeamKey()).getRankNumber(PlayerName) <= Integer.parseInt(args[1])){
+            				player.sendMessage(ChatColor.RED + "Unable to remove ranks above your own or your own.");
+            				return true;
+            			}
+            			else if(!getRank(PlayerName).canEditRanks()){
+            				player.sendMessage(ChatColor.RED + "You lack sufficent permission to delete ranks.");
+            				return true;
+            			}
+            			else if(!isInteger(args[1])){
+            				player.sendMessage(ChatColor.RED + "Rank number must be in digits.");
+            				return true;
+            			}
+            			else{
+            				//THIS CODE IS UGLY.....BUT I AM LAZY
+            				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),Teams.get(tPlayer.getTeamKey()).getRankCount()-1);
+            				Teams.get(tPlayer.getTeamKey()).removeRank(Integer.parseInt(args[1]));
+            				player.sendMessage(ChatColor.RED + "Ranks moved.");
+            			}
+            			break;
                 	/* ==============================================================================
                 	 *	TEAM DISBAND - Disbands the entire team
                 	 * ============================================================================== */
@@ -493,7 +565,7 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.GREEN + "Your current tag is [" + getTeam(PlayerName).getTeamTag() + "]. /team tag <NewTag> to change tag.");
             				return true;
             			}
-            			else if(args.length > 2){
+            			else if(args[1].length() > 2){
             				player.sendMessage(ChatColor.RED + "Tags must be at least three characters.");
             				return true;
             			}
@@ -510,7 +582,21 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM COLOR | COLOUR - Sets a team's color
                 	 * ============================================================================== */
             		case "COLOR": case "COLOUR": 
-            			
+            			if(!tPlayer.hasTeam()){
+            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            				return true;
+            			}
+            			else if(!getTeam(PlayerName).isLeader(PlayerName)){
+            				player.sendMessage(ChatColor.RED + "Must be the leader to change the team color.");
+            				return true;
+            			}
+            			else if(args.length != 2){
+            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            				return true;
+            			}
+            			else{
+            				//CHANGE COLOR
+            			}
             			break;
                 	/* ==============================================================================
                 	 *	TEAM MOTD - Set's a team's Message of the Day, prints if no argument 
