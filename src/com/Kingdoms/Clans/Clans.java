@@ -98,6 +98,8 @@ public class Clans extends JavaPlugin {
             				Teams.put(TeamName, new Team(PlayerName));
             				player.sendMessage(ChatColor.GREEN + "Team [" + TeamName +"] successfully created!");
             				player.sendMessage(ChatColor.GREEN + "Use /team tag <tag> to add a Team tag.");
+            				
+            				saveTeams();
             			}
             			break;
             		/* ==============================================================================
@@ -149,6 +151,7 @@ public class Clans extends JavaPlugin {
             			else {
             				player.sendMessage(ChatColor.GREEN + "You have accepted the invitation from " + tPlayer.getInvite() + ".");
             				teamAdd(PlayerName);
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -262,6 +265,8 @@ public class Clans extends JavaPlugin {
             			else {
             				player.sendMessage(ChatColor.GREEN + "You have left the team.");
             				teamRemove(PlayerName);		
+            				
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -319,6 +324,8 @@ public class Clans extends JavaPlugin {
             				teamRemove(args[1]);
             				player.sendMessage(ChatColor.GREEN + "You have kicked " + args[1] + " out of the team.");
         					getServer().getPlayer(args[1]).sendMessage(ChatColor.RED + "You have been kicked out of the team.");
+        					
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -344,6 +351,7 @@ public class Clans extends JavaPlugin {
             			else{ //ADD RANK
             				Teams.get(tPlayer.getTeamKey()).addRank(new TeamRank(args[1]));
             				player.sendMessage(ChatColor.RED + "You have added rank " + args[1] + " to the team.");
+            				saveTeams();
             			}
             				
             			break;
@@ -363,8 +371,9 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rset <teammember> <ranknumber>.");
             				return true;
             			}
-            			else if(isInteger(args[2])){
-            				
+            			else if(!isInteger(args[2])){
+            				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rset <teammember> <ranknumber>.");
+            				return true;
             			}
             			else{
             				Team team = Teams.get(tPlayer.getTeamKey());
@@ -380,11 +389,15 @@ public class Clans extends JavaPlugin {
             					else{
             						Teams.get(tPlayer.getTeamKey()).changePlayerRank(args[1],Integer.parseInt(args[2]));
             						player.sendMessage(ChatColor.GREEN + "Rank Changed.");
+            						
+            						saveTeams();
             					}
             				}
             				else{
         						Teams.get(tPlayer.getTeamKey()).changePlayerRank(args[1],Integer.parseInt(args[2]));
         						player.sendMessage(ChatColor.GREEN + "Rank Changed.");
+        						
+        						saveTeams();
             				}
             				
             			}
@@ -409,12 +422,14 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
             				return true;
             			}
-            			else if(Teams.get(tPlayer.getTeamKey()).getRankNumber(PlayerName) < Integer.parseInt(args[1])){
+            			else if(getTeam(PlayerName).getRankNumber(PlayerName) < Integer.parseInt(args[1]) && !getTeam(PlayerName).isLeader(PlayerName)){
             				player.sendMessage(ChatColor.RED + "Cannot edit ranks higher than your own.");
             			}
             			else{
             				Teams.get(tPlayer.getTeamKey()).changeRankName(Integer.parseInt(args[1]),args[2]);
             				player.sendMessage(ChatColor.RED + "Rank name changed.");
+            				
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -440,6 +455,7 @@ public class Clans extends JavaPlugin {
             			else{
             				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),Integer.parseInt(args[2]));
             				player.sendMessage(ChatColor.RED + "Ranks moved.");
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -498,18 +514,23 @@ public class Clans extends JavaPlugin {
             				switch(args[2].toUpperCase()){
             				case "KICK":
             					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanKick(Boolean.parseBoolean(args[3]));
+            					saveTeams();
             					break;
             				case "TEAMCHAT":
             					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanTeamChat(Boolean.parseBoolean(args[3]));
+            					saveTeams();
             					break;
             				case "RANKEDIT":
             					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanEditRanks(Boolean.parseBoolean(args[3]));
+            					saveTeams();
             					break;
             				case "INVITE":
             					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanInvite(Boolean.parseBoolean(args[3]));
+            					saveTeams();
             					break;
             				case "PROMOTE":
             					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanSetRanks(Boolean.parseBoolean(args[3]));
+            					saveTeams();
             					break;
             				default: 
             					player.sendMessage(ChatColor.RED + "Invalid permission. Use /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true|false>.");
@@ -542,6 +563,7 @@ public class Clans extends JavaPlugin {
             				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),Teams.get(tPlayer.getTeamKey()).getRankCount()-1);
             				Teams.get(tPlayer.getTeamKey()).removeRank(Integer.parseInt(args[1]));
             				player.sendMessage(ChatColor.RED + "Ranks moved.");
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -564,6 +586,7 @@ public class Clans extends JavaPlugin {
             				Teams.remove(TeamKey);
             				saveTeams();
             				player.sendMessage(ChatColor.GREEN + "Your team has been succesfully disbanded.");
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -593,6 +616,7 @@ public class Clans extends JavaPlugin {
             			else {
             				Teams.get(tPlayer.getTeamKey()).setTeamTag(args[1]);
             				player.sendMessage(ChatColor.GREEN +"Tag has been changed to [" + getTeam(PlayerName).getTeamTag() + "].");
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -613,6 +637,8 @@ public class Clans extends JavaPlugin {
             			}
             			else{
             				//CHANGE COLOR
+            				
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -638,6 +664,7 @@ public class Clans extends JavaPlugin {
             					MOTD += " " + args[i];
             				Teams.get(tPlayer.getTeamKey()).setMOTD(MOTD);	
             				player.sendMessage(ChatColor.GREEN + "Team MOTD has been changed.");
+            				saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -944,6 +971,7 @@ public class Clans extends JavaPlugin {
 	public void updateUserDate(String PlayerName)
 	{
 		Users.get(PlayerName).updateLastSeen();
+		savePlayers();
 	}
 
 
