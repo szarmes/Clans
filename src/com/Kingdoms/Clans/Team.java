@@ -126,24 +126,26 @@ public class Team {
 		return TeamList.get(RankNumber-1).getRank();
 	}
 	
+	public boolean rankExist(int RankNumber){
+		if(TeamList.size() >= RankNumber - 1)
+			return true;
+		return false;	
+	}
+	
 	public void changePlayerRank(String PlayerName,int RankNumber){
 		TeamList.get(this.getRankNumber(PlayerName)).remove(PlayerName);
 		TeamList.get(RankNumber-1).add(PlayerName);
 	}
-	public void changeRankName(String oldName, String newName){
-		for(TierList tl : TeamList)
-		{
-			if(tl.getRank().getRankName() == oldName){
-				tl.getRank().setRankName(newName);
-				break;
-			}
-			
-		}
+	
+	public void changeRankName(int RankNumber, String newName){
+		TeamList.get(RankNumber).getRank().setRankName(newName);
 	}
+	
 	public ChatColor getColor()
 	{
 		return TeamColor;
 	}
+	
 	public ArrayList<String> getTeamInfo()
 	{
 		ArrayList<String> teamInfo = new ArrayList<String>();
@@ -156,6 +158,21 @@ public class Team {
 		}
 		return teamInfo;
 	}
+	
+	public ArrayList<String> getRankInfo(int i)
+	{
+		ArrayList<String> rankInfo = new ArrayList<String>();
+		TeamRank rank = TeamList.get(i).getRank();
+		rankInfo.add(rank.getRankName() + " Permissions:");
+		rankInfo.add(ChatColor.GREEN + "Set Ranks : " + rank.canSetRanks());
+		rankInfo.add(ChatColor.GREEN + "Invite    : " + rank.canInvite());
+		rankInfo.add(ChatColor.GREEN + "Edit Ranks: " + rank.canEditRanks());
+		rankInfo.add(ChatColor.GREEN + "Kick      : " + rank.canKick());
+		rankInfo.add(ChatColor.GREEN + "Team Chat : " + rank.canTeamChat());
+		rankInfo.add(ChatColor.GREEN + "See Area  : " + rank.canSeeAreaInfo());
+		return rankInfo;
+	}
+	
 	public int getTeamSize()
 	{
 		int TeamSize = 0;
@@ -165,6 +182,15 @@ public class Team {
 	}
 	public String getTeamTag(){
 		return "";
+	}
+	
+	public void massRankMove(int start, int finish){
+		HashSet<String> temp = new HashSet<String>();
+		temp = TeamList.get(start -1).getRankMembers();
+		TeamList.get(start - 1).clearRankMembers();
+		for(String member : temp){
+			TeamList.get(finish-1).add(member);
+		}
 	}
 	
 	public void setTeamTag(String Tagin){
@@ -188,6 +214,7 @@ public class Team {
 		
 		return save;
 	}
+	
 	private ChatColor interpretColor(String Colorin) {
 
 		ChatColor c;
