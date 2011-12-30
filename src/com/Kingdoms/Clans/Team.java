@@ -145,7 +145,18 @@ public class Team {
 	{
 		return TeamColor;
 	}
-	
+	public ArrayList<String> getAllMembers()
+	{
+		//Super inefficient! But only needed for disband...
+		ArrayList<String> members = new ArrayList<String>();
+		for(TierList tl : TeamList)
+		{
+			String[] RankMembers = tl.membersToString().split(", ");
+			for(String s : RankMembers)
+				members.add(s);
+		}
+		return members;
+	}
 	public ArrayList<String> getTeamInfo()
 	{
 		ArrayList<String> teamInfo = new ArrayList<String>();
@@ -158,7 +169,6 @@ public class Team {
 		}
 		return teamInfo;
 	}
-	
 	public ArrayList<String> getRankInfo(int i)
 	{
 		ArrayList<String> rankInfo = new ArrayList<String>();

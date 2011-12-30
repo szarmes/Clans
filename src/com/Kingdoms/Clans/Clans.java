@@ -288,7 +288,7 @@ public class Clans extends JavaPlugin {
                 	/* ==============================================================================
                 	 *	TEAM TOPSCORELIST - Prints the top 5 teams based on score
                 	 * ============================================================================== */
-            		case "TOPSCORELIST": break;
+            		case "TOPSCORES": case "TOP": case "SB": break;
                 	/* ==============================================================================
                 	 *	TEAM SCORE - Prints the score of the team
                 	 * ============================================================================== */
@@ -548,6 +548,23 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM DISBAND - Disbands the entire team
                 	 * ============================================================================== */
             		case "DISBAND": 
+            			if(!tPlayer.hasTeam()){
+            				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            				return true;
+            			}
+            			else if (!getTeam(PlayerName).isLeader(PlayerName)) {
+            				player.sendMessage(ChatColor.RED + "You must be the leader to disband the team.");
+            				return true;
+            			}
+            			else {
+            				String TeamKey = tPlayer.getTeamKey();
+            				ArrayList<String> members = getTeam(PlayerName).getAllMembers();
+            				for(String mem : members)
+            					Users.get(mem).clearTeamKey();
+            				Teams.remove(TeamKey);
+            				saveTeams();
+            				player.sendMessage(ChatColor.GREEN + "Your team has been succesfully disbanded.");
+            			}
             			break;
                 	/* ==============================================================================
                 	 *	TEAM TAG - Sets a team's tag
