@@ -70,7 +70,7 @@ public class TierList {
 		if(!RankMembers.isEmpty()) {
 			for(String member : RankMembers)
 				list += member + ", ";
-			list.substring(0,list.length()-2);
+			list.substring(0,list.length()-3);
 		}
 		return list;
 	}

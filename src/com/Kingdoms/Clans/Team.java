@@ -168,7 +168,7 @@ public class Team {
 		int rankNum = 1;
 		for(TierList tl : TeamList)
 		{
-			teamInfo.add(TeamColor + "" + rankNum + ". "+ tl.getRank().getRankName() + ":" + ChatColor.GRAY + tl.membersToString());
+			teamInfo.add(TeamColor + "" + rankNum + ". "+ tl.getRank().getRankName() + ": " + ChatColor.GRAY + tl.membersToString());
 			rankNum++;
 		}
 		return teamInfo;
