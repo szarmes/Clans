@@ -155,9 +155,12 @@ public class Team {
 		ArrayList<String> members = new ArrayList<String>();
 		for(TierList tl : TeamList)
 		{
-			String[] RankMembers = tl.membersToString().split(", ");
-			for(String s : RankMembers)
-				members.add(s);
+			String list = tl.membersToString();
+			if(!list.equalsIgnoreCase("")) {
+					String[] RankMembers = list.split(", ");
+					for(String s : RankMembers)
+						members.add(s);
+			}
 		}
 		return members;
 	}

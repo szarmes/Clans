@@ -179,7 +179,7 @@ public class Clans extends JavaPlugin {
             				for(String key : Teams.keySet()){
             					Team team = Teams.get(key);
             					player.sendMessage(team.getColor() + "[" + team.getTeamTag() + "] " 
-            							+ ChatColor.GRAY + key + "("+ team.getTeamSize() +")"); //add team size later
+            							+ ChatColor.GRAY + key + " ("+ team.getTeamSize() +")"); //add team size later
             		        }
             			}
             			break;
@@ -426,7 +426,7 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Cannot edit ranks higher than your own.");
             			}
             			else{
-            				Teams.get(tPlayer.getTeamKey()).changeRankName(Integer.parseInt(args[1]),args[2]);
+            				Teams.get(tPlayer.getTeamKey()).changeRankName(Integer.parseInt(args[1])-1,args[2]);
             				player.sendMessage(ChatColor.RED + "Rank name changed.");
             				
             				saveTeams();
@@ -584,7 +584,7 @@ public class Clans extends JavaPlugin {
             				for(String mem : members)
             					Users.get(mem).clearTeamKey();
             				Teams.remove(TeamKey);
-            				saveTeams();
+            				
             				player.sendMessage(ChatColor.GREEN + "Your team has been succesfully disbanded.");
             				saveTeams();
             			}
@@ -884,11 +884,12 @@ public class Clans extends JavaPlugin {
     			   TeamRank newRank = new TeamRank((String)Tier.get("Rank Name"),(HashMap<String,Boolean>)Tier.get("Permissions"));
     			   
     			   //Add TeamKeys to all Members
-    			   for(String PlayerName : (HashSet<String>)Tier.get("Members"))
+    			   HashSet<String> Mems = new HashSet<String>((ArrayList<String>)Tier.get("Members"));
+    			   for(String PlayerName : Mems)
     				   Users.get(PlayerName).setTeamKey(key);
     			   
     			   //Add Tier to TeamList
-    			   TeamList.add(new TierList(newRank, (HashSet<String>)Tier.get("Members")));
+    			   TeamList.add(new TierList(newRank, Mems));
     		   }
     		   //Add to Teams
     		   Teams.put(key, new Team(TeamList, MOTD, Score, Tag, Color));
@@ -923,7 +924,7 @@ public class Clans extends JavaPlugin {
 			out.write("");
 			for(String key : Users.keySet())
 			{
-				out.write(key + ": " + Users.get(key).getSaveString());
+				out.write(key + ": " + Users.get(key).getSaveString()+"\n");
 			}
 			out.close();
 			fstream.close();
@@ -971,6 +972,7 @@ public class Clans extends JavaPlugin {
 	public void makeUser(String PlayerName)
 	{
 		Users.put(PlayerName, new TeamPlayer());
+		savePlayers();
 	}
 	public void updateUserDate(String PlayerName)
 	{
