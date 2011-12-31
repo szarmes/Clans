@@ -126,12 +126,6 @@ public class Team {
 		return TeamList.get(RankNumber-1).getRank();
 	}
 	
-	public boolean rankExist(int RankNumber){
-		if(TeamList.size() >= RankNumber - 1)
-			return true;
-		return false;	
-	}
-	
 	public void changePlayerRank(String PlayerName,int RankNumber){
 		TeamList.get(this.getRankNumber(PlayerName)).remove(PlayerName);
 		TeamList.get(RankNumber-1).add(PlayerName);
@@ -144,6 +138,9 @@ public class Team {
 	public ChatColor getColor()
 	{
 		return TeamColor;
+	}
+	public String getColorName(){
+		return reverseInterpretColor(TeamColor);
 	}
 	public void setColor(String Colorin){
 		TeamColor = interpretColor(Colorin);
