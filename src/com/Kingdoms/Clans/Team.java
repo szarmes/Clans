@@ -198,7 +198,7 @@ public class Team {
 		return TeamSize;
 	}
 	public String getTeamTag(){
-		return "";
+		return TeamTag;
 	}
 	
 	public void massRankMove(int start, int finish){

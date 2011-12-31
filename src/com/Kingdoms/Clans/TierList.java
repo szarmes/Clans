@@ -68,9 +68,14 @@ public class TierList {
 	{
 		String list = "";
 		if(!RankMembers.isEmpty()) {
-			for(String member : RankMembers)
-				list += member + ", ";
-			list.substring(0,list.length()-3);
+			int i = 1;
+			for(String member : RankMembers) {
+				if(i == RankMembers.size())
+					list += member;
+				else
+					list += member + ", ";
+			}
+			list.substring(0,list.length()-4);
 		}
 		return list;
 	}
