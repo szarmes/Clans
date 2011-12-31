@@ -884,12 +884,17 @@ public class Clans extends JavaPlugin {
     			   TeamRank newRank = new TeamRank((String)Tier.get("Rank Name"),(HashMap<String,Boolean>)Tier.get("Permissions"));
     			   
     			   //Add TeamKeys to all Members
-    			   HashSet<String> Mems = new HashSet<String>((ArrayList<String>)Tier.get("Members"));
-    			   for(String PlayerName : Mems)
-    				   Users.get(PlayerName).setTeamKey(key);
+    			   if(Tier.get("Members") != null){
+    				   HashSet<String> Mems = new HashSet<String>((ArrayList<String>)Tier.get("Members"));
     			   
-    			   //Add Tier to TeamList
-    			   TeamList.add(new TierList(newRank, Mems));
+    				   for(String PlayerName : Mems)
+    					   Users.get(PlayerName).setTeamKey(key);
+    			   
+    				   //Add Tier to TeamList
+    				   TeamList.add(new TierList(newRank, Mems));
+    			   }
+    			   else
+    				   TeamList.add(new TierList(newRank, new HashSet<String>()));
     		   }
     		   //Add to Teams
     		   Teams.put(key, new Team(TeamList, MOTD, Score, Tag, Color));
