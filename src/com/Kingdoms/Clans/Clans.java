@@ -49,6 +49,7 @@ public class Clans extends JavaPlugin {
 		
 		PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+        pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
         
 		//Team File
 		TeamsFile = new File("plugins/Clans/Teams.yml");
@@ -962,7 +963,11 @@ public class Clans extends JavaPlugin {
 		TeamPlayer tPlayer = Users.get(PlayerName);
 		return Teams.get(tPlayer.getTeamKey()).getRank(PlayerName);
 	}
-	private Team getTeam(String PlayerName)
+	public TeamPlayer getTeamPlayer(String PlayerName)
+	{
+		return Users.get(PlayerName);
+	}
+	public Team getTeam(String PlayerName)
 	{
 		TeamPlayer tPlayer = Users.get(PlayerName);
 		return Teams.get(tPlayer.getTeamKey());
