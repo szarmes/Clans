@@ -42,9 +42,11 @@ public class ClansPlayerListener extends PlayerListener {
     	Team team = plugin.getTeam(PlayerName);
     	
     	if(tPlayer.hasTeam()) {
-        	tag = tag.replace("{CLANCOLOR}", ""+team.getColor());
-        	tag = tag.replace("{CLANTAG}", ""+team.getTeamTag());
-        	format = format.replace("{FULLTAG}", tag);
+    		if(plugin.getTeam(PlayerName).hasTag()) {
+    			tag = tag.replace("{CLANCOLOR}", ""+team.getColor());
+    			tag = tag.replace("{CLANTAG}", ""+team.getTeamTag());
+    			format = format.replace("{FULLTAG}", tag);
+    		}
     	}
     	else {
         	format = format.replace("{FULLTAG}", "");

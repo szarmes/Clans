@@ -19,6 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.Yaml;
@@ -57,7 +58,9 @@ public class Clans extends JavaPlugin {
 		PlayersFile = new File("plugins/Clans/Players.yml");
 		//Load Data From Files
 		loadData();
-
+		
+        PluginDescriptionFile pdfFile = this.getDescription();
+        System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
 	}
 	public void onDisable() {
 		log.info("Clans disabled.");
@@ -91,12 +94,17 @@ public class Clans extends JavaPlugin {
             			}
             			else if(args[1].length() > 30 ){//MORE THAN 30 CHARACTERS
             				player.sendMessage(ChatColor.RED + "Team names must be less than 30 characters.");
+            				return true;
             			}
             			else{ //CREATE TEAM
             				int i;
             				String TeamName = args[1];
             				for(i=2;i<args.length;i++)
             					TeamName += " " + args[i];
+            				if(Teams.containsKey(TeamName)) {
+            					player.sendMessage(ChatColor.RED + "A team with this name already exists, please choose another team name.");
+            					return true;
+            				}
             				//Set Player's Team to new Key
             				Users.get(PlayerName).setTeamKey(TeamName);
             				//Create New Team and Add to Teams
@@ -426,7 +434,7 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
             				return true;
             			}
-            			else if(Teams.get(tPlayer.getTeamKey()).getRankCount() < Integer.parseInt(args[2])){//RANK NUMBER DOESNT EXIST
+            			else if(Teams.get(tPlayer.getTeamKey()).getRankCount() < Integer.parseInt(args[1])){//RANK NUMBER DOESNT EXIST
         					player.sendMessage(ChatColor.RED + "Rank number does not exist.");
         					return true;
         				}
@@ -489,7 +497,7 @@ public class Clans extends JavaPlugin {
             			}
             			else{
             				Team team = Teams.get(tPlayer.getTeamKey());
-            				if(team.getRankCount() < Integer.parseInt(args[2])){//RANK NUMBER DOESNT EXIST
+            				if(team.getRankCount() < Integer.parseInt(args[1])){//RANK NUMBER DOESNT EXIST
             					player.sendMessage(ChatColor.RED + "Rank number does not exist.");
             					return true;
             				}

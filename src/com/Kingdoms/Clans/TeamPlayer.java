@@ -63,7 +63,7 @@ public class TeamPlayer {
 	private Calendar getCurrentDate()
 	{
 		Calendar cal = Calendar.getInstance();
-		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
+		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DATE));
         return cal;
 	}
 	public void setInvite(String invitingTeam){
@@ -79,7 +79,7 @@ public class TeamPlayer {
 	{
 		String save = "";
 		String date = "LastOnline: '" + LastSeen.get(Calendar.MONTH)+"/"+LastSeen.get(Calendar.DATE)+"/"+LastSeen.get(Calendar.YEAR)+"'";
-		save = "{" + date +"," + "ELO: '" + ELO + "'}";
+		save = "{" + date +", " + "ELO: '" + ELO + "'}";
 		
 		
 		return save;

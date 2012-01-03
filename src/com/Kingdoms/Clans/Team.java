@@ -94,6 +94,10 @@ public class Team {
 	{
 		return TeamList.size();
 	}
+	public boolean hasTag()
+	{
+		return !TeamTag.equalsIgnoreCase("");
+	}
 	public TeamRank getRank(String PlayerName)
 	{
 		int RankCount = TeamList.size();
