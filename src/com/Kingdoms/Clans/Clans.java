@@ -505,9 +505,15 @@ public class Clans extends JavaPlugin {
             					return true;
             				}
             				else{//PRINT RANK INFO
-            					ArrayList<String> rankInfo = team.getRankInfo(Integer.parseInt(args[1])-1);
-           					 	for(String s : rankInfo)
-           					 		player.sendMessage(s);
+            					
+            					TeamRank rank = getTeam(PlayerName).getRank(Integer.parseInt(args[1]));
+            					player.sendMessage(ChatColor.DARK_GREEN + rank.getRankName() + " Permissions:");
+            					player.sendMessage(ChatColor.GREEN + "Set Ranks   : " + rank.canSetRanks());
+            					player.sendMessage(ChatColor.GREEN + "Invite        : " + rank.canInvite());
+            					player.sendMessage(ChatColor.GREEN + "Edit Ranks  : " + rank.canEditRanks());
+            					player.sendMessage(ChatColor.GREEN + "Kick          : " + rank.canKick());
+            					player.sendMessage(ChatColor.GREEN + "Team Chat  : " + rank.canTeamChat());
+            					player.sendMessage(ChatColor.GREEN + "Area Info  : " + rank.canSeeAreaInfo());
             				}
             			}
             			break;

@@ -19,7 +19,6 @@ public class TierList {
 		Rank = r;
 		RankMembers = list;
 	}
-	
 	public HashSet<String> getRankMembers() {
 		return RankMembers;
 	}

@@ -177,20 +177,6 @@ public class Team {
 		}
 		return teamInfo;
 	}
-	public ArrayList<String> getRankInfo(int i)
-	{
-		ArrayList<String> rankInfo = new ArrayList<String>();
-		TeamRank rank = TeamList.get(i).getRank();
-		rankInfo.add(rank.getRankName() + " Permissions:");
-		rankInfo.add(ChatColor.GREEN + "Set Ranks : " + rank.canSetRanks());
-		rankInfo.add(ChatColor.GREEN + "Invite    : " + rank.canInvite());
-		rankInfo.add(ChatColor.GREEN + "Edit Ranks: " + rank.canEditRanks());
-		rankInfo.add(ChatColor.GREEN + "Kick      : " + rank.canKick());
-		rankInfo.add(ChatColor.GREEN + "Team Chat : " + rank.canTeamChat());
-		rankInfo.add(ChatColor.GREEN + "See Area  : " + rank.canSeeAreaInfo());
-		return rankInfo;
-	}
-	
 	public int getTeamSize()
 	{
 		int TeamSize = 0;
