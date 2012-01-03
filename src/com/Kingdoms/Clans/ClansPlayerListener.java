@@ -47,6 +47,9 @@ public class ClansPlayerListener extends PlayerListener {
     			tag = tag.replace("{CLANTAG}", ""+team.getTeamTag());
     			format = format.replace("{FULLTAG}", tag);
     		}
+    		else {
+    			format = format.replace("{FULLTAG}", "");
+    		}
     	}
     	else {
         	format = format.replace("{FULLTAG}", "");

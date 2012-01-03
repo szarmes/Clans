@@ -145,7 +145,7 @@ public class Clans extends JavaPlugin {
             				else{ // GIVE INVITE TO INVITED PLAYER
             					Users.get(args[1]).setInvite(tPlayer.getTeamKey());
             					player.sendMessage(ChatColor.GREEN + "You have invited " + args[1] + " to your team.");
-            					getServer().getPlayer(args[1]).sendMessage(ChatColor.RED + "You have been invited to " + tPlayer.getTeamKey() +". Type /team accept to or /team reject to accept or deny this offer.");
+            					getServer().getPlayer(args[1]).sendMessage(ChatColor.GREEN + "You have been invited to " + tPlayer.getTeamKey() +". Type /team accept to or /team reject to accept or deny this offer.");
             				}
             			}
             			break;
@@ -324,7 +324,9 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to kick on this team");
             				return true;
             			}
-            			
+            			if(getTeam(PlayerName).getRankNumber(PlayerName) >= getTeam(PlayerName).getRankNumber((args[1]))){//CANT ALTER LEADERS
+        					player.sendMessage(ChatColor.RED + "Can not kick players with a higher rank than your own.");
+            			}
             			else if(!Users.containsKey(args[1])){ // KICKED NAME DOESN'T EXIST
             				player.sendMessage(ChatColor.RED + "That player does not exist");
             				return true;
@@ -333,7 +335,6 @@ public class Clans extends JavaPlugin {
             				teamRemove(args[1]);
             				player.sendMessage(ChatColor.GREEN + "You have kicked " + args[1] + " out of the team.");
         					getServer().getPlayer(args[1]).sendMessage(ChatColor.RED + "You have been kicked out of the team.");
-        					
             				saveTeams();
             			}
             			break;
@@ -359,10 +360,9 @@ public class Clans extends JavaPlugin {
             			}
             			else{ //ADD RANK
             				Teams.get(tPlayer.getTeamKey()).addRank(new TeamRank(args[1]));
-            				player.sendMessage(ChatColor.RED + "You have added rank " + args[1] + " to the team.");
+            				player.sendMessage(ChatColor.GREEN + "You have added rank " + args[1] + " to the team.");
             				saveTeams();
             			}
-            				
             			break;
                 	/* ==============================================================================
                 	 *	TEAM RSET | RANKSET - Sets a player's rank
@@ -380,38 +380,33 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rset <teammember> <ranknumber>.");
             				return true;
             			}
-            			else if(!isInteger(args[2])){
+            			else if(!isInteger(args[2])){ //IF NO INTEGER
             				player.sendMessage(ChatColor.RED + "Invalid use. Use /team rset <teammember> <ranknumber>.");
             				return true;
             			}
-            			else{
-            				Team team = Teams.get(tPlayer.getTeamKey());
-            				if(team.getRankCount() < Integer.parseInt(args[2])){//RANK NUMBER DOESNT EXIST
-            					player.sendMessage(ChatColor.RED + "Rank number does not exist.");
+            			else if(1 > Integer.parseInt(args[2])|| Integer.parseInt(args[2]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
+            				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
+            				return true;	
+            			}
+            			else if(!getTeam(PlayerName).isLeader(PlayerName)){//PLAYER ISNT LEADER
+            				if(getTeam(PlayerName).getRankNumber(PlayerName) < Integer.parseInt(args[1])){//CANT ALTER LEADERS
+            					player.sendMessage(ChatColor.RED + "Can not set rank of members higher than your own.");
+            					return true;
             				}
-            				else if(!team.isLeader(PlayerName)){//PLAYER ISNT LEADER
-            					if(team.getRankNumber(PlayerName) < Integer.parseInt(args[1])){//CANT ALTER LEADERS
-            						player.sendMessage(ChatColor.RED + "Can not set rank of members higher than your own.");
-            						return true;
-            					}
-            					else if(Teams.get(tPlayer.getTeamKey()).getRankNumber(PlayerName) < Integer.parseInt(args[2])){//CANT SET LEADER AS A PLAYERS RANK
-            						player.sendMessage(ChatColor.RED + "Can not set any members to a rank higher than your own.");
-            						return true;
-            					}
-            					else{
-            						Teams.get(tPlayer.getTeamKey()).changePlayerRank(args[1],Integer.parseInt(args[2]));
-            						player.sendMessage(ChatColor.GREEN + "Rank Changed.");
-            						
-            						saveTeams();
-            					}
+            				else if(getTeam(PlayerName).getRankNumber(PlayerName) < Integer.parseInt(args[2])){//CANT SET LEADER AS A PLAYERS RANK
+            					player.sendMessage(ChatColor.RED + "Can not set any members to a rank higher than your own.");
+            					return true;
             				}
             				else{
-        						Teams.get(tPlayer.getTeamKey()).changePlayerRank(args[1],Integer.parseInt(args[2]));
-        						player.sendMessage(ChatColor.GREEN + "Rank Changed.");
-        						
-        						saveTeams();
+            					Teams.get(tPlayer.getTeamKey()).changePlayerRank(args[1],Integer.parseInt(args[2]));
+            					player.sendMessage(ChatColor.GREEN + "Rank Changed.");
+            					saveTeams();
             				}
-            				
+            			}
+            			else{
+        					Teams.get(tPlayer.getTeamKey()).changePlayerRank(args[1],Integer.parseInt(args[2]));
+        					player.sendMessage(ChatColor.GREEN + "Rank Changed.");
+        					saveTeams();
             			}
             			break;
                 	/* ==============================================================================
@@ -434,17 +429,17 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
             				return true;
             			}
-            			else if(Teams.get(tPlayer.getTeamKey()).getRankCount() < Integer.parseInt(args[1])){//RANK NUMBER DOESNT EXIST
-        					player.sendMessage(ChatColor.RED + "Rank number does not exist.");
-        					return true;
-        				}
+            			else if(1 > Integer.parseInt(args[1])|| Integer.parseInt(args[1]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
+            				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
+            				return true;	
+            			}
             			else if(getTeam(PlayerName).getRankNumber(PlayerName) < Integer.parseInt(args[1]) && !getTeam(PlayerName).isLeader(PlayerName)){
             				player.sendMessage(ChatColor.RED + "Cannot edit ranks higher than your own.");
             				return true;
             			}
             			else{
             				Teams.get(tPlayer.getTeamKey()).changeRankName(Integer.parseInt(args[1])-1,args[2]);
-            				player.sendMessage(ChatColor.RED + "Rank name changed.");
+            				player.sendMessage(ChatColor.GREEN + "Rank name changed.");
             				
             				saveTeams();
             			}
@@ -469,13 +464,17 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
             				return true;
             			}
-            			else if(Teams.get(tPlayer.getTeamKey()).getRankCount() < Integer.parseInt(args[2])){//RANK NUMBER DOESNT EXIST
-        					player.sendMessage(ChatColor.RED + "Rank number does not exist.");
-        					return true;
-        				}
+            			else if(1 > Integer.parseInt(args[1])|| Integer.parseInt(args[1]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
+            				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
+            				return true;	
+            			}
+            			else if(1 > Integer.parseInt(args[2])|| Integer.parseInt(args[2]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
+            				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
+            				return true;	
+            			}
             			else{
             				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),Integer.parseInt(args[2]));
-            				player.sendMessage(ChatColor.RED + "Ranks moved.");
+            				player.sendMessage(ChatColor.GREEN + "Ranks moved.");
             				saveTeams();
             			}
             			break;
@@ -494,6 +493,10 @@ public class Clans extends JavaPlugin {
             			else if(!isInteger(args[1])){//MUST BE INTEGER
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
             				return true;
+            			}
+            			else if(1 > Integer.parseInt(args[1])|| Integer.parseInt(args[1]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
+            				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
+            				return true;	
             			}
             			else{
             				Team team = Teams.get(tPlayer.getTeamKey());
@@ -527,6 +530,10 @@ public class Clans extends JavaPlugin {
             			else if(!isInteger(args[1])){
             				player.sendMessage(ChatColor.RED + "Rank Numbers must be digits.");
             				return true;
+            			}
+            			else if(1 > Integer.parseInt(args[1])|| Integer.parseInt(args[1]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
+            				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
+            				return true;	
             			}
             			else if(Teams.get(tPlayer.getTeamKey()).getRankNumber(PlayerName) < Integer.parseInt(args[1])){
             				player.sendMessage(ChatColor.RED + "Cannot edit ranks higher than your own.");
@@ -581,6 +588,10 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Rank number must be in digits.");
             				return true;
             			}
+            			else if(1 > Integer.parseInt(args[1])|| Integer.parseInt(args[1]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
+            				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
+            				return true;	
+            			}
             			else if(team.getRankCount() < Integer.parseInt(args[2])){//RANK NUMBER DOESNT EXIST
         					player.sendMessage(ChatColor.RED + "Rank number does not exist.");
         					return true;
@@ -589,7 +600,7 @@ public class Clans extends JavaPlugin {
             				
             				Teams.get(tPlayer.getTeamKey()).massRankMove(Integer.parseInt(args[1]),team.getRankCount()-1);
             				Teams.get(tPlayer.getTeamKey()).removeRank(Integer.parseInt(args[1]));
-            				player.sendMessage(ChatColor.RED + "Ranks moved.");
+            				player.sendMessage(ChatColor.GREEN + "Ranks moved.");
             				saveTeams();
             			}
             			break;
@@ -732,11 +743,11 @@ public class Clans extends JavaPlugin {
                    		else if(args[1].equalsIgnoreCase("3")) {
                    			player.sendMessage(ChatColor.RED + "Team Rank Commands:");
                    			player.sendMessage(ChatColor.RED + "/team rankcreate <rankname>"+ChatColor.GRAY +" - Creates new rank at the bottom of the rank structure.");
-                   			player.sendMessage(ChatColor.RED + "/team rankname <ranknumber> <rankname>"+ChatColor.GRAY +" - Renames a specified rank.");
-                   			player.sendMessage(ChatColor.RED + "/team setrank <playername> <ranknumber>"+ChatColor.GRAY +" - Sets the rank of a team member.");
+                   			player.sendMessage(ChatColor.RED + "/team rankrename <ranknumber> <rankname>"+ChatColor.GRAY +" - Renames a specified rank.");
+                   			player.sendMessage(ChatColor.RED + "/team rankset <playername> <ranknumber>"+ChatColor.GRAY +" - Sets the rank of a team member.");
                    			player.sendMessage(ChatColor.RED + "/team rankmoveall <oldranknumber> <newranknumber>"+ChatColor.GRAY +" - Moves all members of a rank to a new rank.");
                    			player.sendMessage(ChatColor.RED + "/team rankinfo <ranknumber>"+ChatColor.GRAY +" - Outputs a rank's permissions.");
-                   			player.sendMessage(ChatColor.RED + "/team rankflag <ranknumber> <kick/teamchat/rankedit/invite/promote> <true/false>"+ChatColor.GRAY +" - Sets a rank's permissions.");
+                   			player.sendMessage(ChatColor.RED + "/team rankpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true/false>"+ChatColor.GRAY +" - Sets a rank's permissions.");
                    			player.sendMessage(ChatColor.RED + "/team rankdelete <ranknumber>"+ChatColor.GRAY +" - Deletes a rank.");
                    		}
                    		else if(args[1].equalsIgnoreCase("4")) {
