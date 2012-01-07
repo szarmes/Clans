@@ -73,8 +73,8 @@ public class TierList {
 					list += member;
 				else
 					list += member + ", ";
+				i++;
 			}
-			list.substring(0,list.length()-4);
 		}
 		return list;
 	}
