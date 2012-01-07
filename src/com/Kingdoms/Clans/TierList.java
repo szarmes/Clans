@@ -59,7 +59,7 @@ public class TierList {
 		save += "            Members:\n";
 		for(String player : RankMembers)
 		{
-			save += "                - " + player + "\n";
+			save += "                - \'" + player + "\'\n";
 		}
 		return save;
 	}

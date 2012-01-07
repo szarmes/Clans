@@ -979,7 +979,7 @@ public class Clans extends JavaPlugin {
 			out.write("");
 			for(String key : Users.keySet())
 			{
-				out.write(key + ": " + Users.get(key).getSaveString()+"\n");
+				out.write("\'"+key + "\': " + Users.get(key).getSaveString()+"\n");
 			}
 			out.close();
 			fstream.close();
