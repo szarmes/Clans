@@ -269,7 +269,7 @@ public class Clans extends JavaPlugin {
             				return true;
             			}
             			else if(getTeam(PlayerName).isLeader(PlayerName) && getTeam(PlayerName).getLeaderCount() == 1){//CANT LEAVE AS LEADER	
-            				player.sendMessage(ChatColor.RED + "Must promote someone else to leader before leaving.");
+            				player.sendMessage(ChatColor.RED + "Must promote someone else to leader before leaving. Do /team disband if you are trying to disband the team.");
             				return true;
             			}
             			else {//LEAVE TEAM
@@ -387,6 +387,10 @@ public class Clans extends JavaPlugin {
             			else if(1 > Integer.parseInt(args[2])|| Integer.parseInt(args[2]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
             				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
             				return true;	
+            			}
+            			else if(getTeam(PlayerName).isLeader(PlayerName) && getTeam(PlayerName).getLeaderCount() == 1 && args[1].equalsIgnoreCase(PlayerName)){//CANT DEMOTE SELF WITH NO LEADERS	
+            				player.sendMessage(ChatColor.RED + "Must promote someone else to leader before changing your own rank.");
+            				return true;
             			}
             			else if(!getTeam(PlayerName).isLeader(PlayerName)){//PLAYER ISNT LEADER
             				if(getTeam(PlayerName).getRankNumber(PlayerName) < Integer.parseInt(args[1])){//CANT ALTER LEADERS
