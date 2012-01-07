@@ -958,7 +958,7 @@ public class Clans extends JavaPlugin {
 			out.write("");
 			for(String key : Teams.keySet())
 			{
-				out.write(key + ":\n");
+				out.write("\'"+ key + "\':\n");
 				out.write(Teams.get(key).getSaveString());
 			}
 			out.close();
