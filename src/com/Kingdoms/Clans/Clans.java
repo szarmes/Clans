@@ -545,7 +545,7 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
             				return true;	
             			}
-            			else if(Teams.get(tPlayer.getTeamKey()).getRankNumber(PlayerName) < Integer.parseInt(args[1])){
+            			else if(getTeam(PlayerName).getRankNumber(PlayerName) < Integer.parseInt(args[1]) && !getTeam(PlayerName).isLeader(PlayerName)){
             				player.sendMessage(ChatColor.RED + "Cannot edit ranks higher than your own.");
             			}
             			else{
