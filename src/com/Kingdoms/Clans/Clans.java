@@ -84,7 +84,11 @@ public class Clans extends JavaPlugin {
             		 *	TEAM CREATE - Creates a team.
             		 * ============================================================================== */
             		case "CREATE": 
-            			if(args.length < 2) {//INVALID ARGUMENTS
+            			if(!player.hasPermission("Clans.create")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(args.length < 2) {//INVALID ARGUMENTS
             				player.sendMessage(ChatColor.RED + "Invalid number of arguments.");
             				return true;
             			}
@@ -119,7 +123,11 @@ public class Clans extends JavaPlugin {
                      *	TEAM INVITE - Invites a player to the team
                      * ============================================================================== */   
             		case "INVITE": 
-            			if(args.length != 2){ //NOT ENOUGH ARGS
+            			if(!player.hasPermission("Clans.invite")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(args.length != 2){ //NOT ENOUGH ARGS
             				player.sendMessage(ChatColor.RED + "You didn't invite anyone.");
             				return true;
             			}
@@ -152,8 +160,12 @@ public class Clans extends JavaPlugin {
                 	/* ==============================================================================
                 	 *	TEAM ACCEPT - Accepts an invite
                 	 * ============================================================================== */           		
-            		case "ACCEPT": 		
-            			if(tPlayer.hasTeam()){ // PLAYER HAS A TEAM
+            		case "ACCEPT": 	
+            			if(!player.hasPermission("Clans.accept")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(tPlayer.hasTeam()){ // PLAYER HAS A TEAM
             				player.sendMessage(ChatColor.RED + "You are already on a team.");
             				return true;
             			}
@@ -171,7 +183,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM REJECT - Rejects an invite
                 	 * ============================================================================== */            		
             		case "REJECT": 
-            			if(!tPlayer.hasInvite()){
+            			if(!player.hasPermission("Clans.reject")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasInvite()){
         					player.sendMessage(ChatColor.RED + "You do not have an invite to reject.");
         					return true;
         				}
@@ -184,7 +200,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM LIST - Lists all teams
                 	 * ============================================================================== */
             		case "LIST": 
-            			if(args.length != 1){//INVALID ARGUMENTS
+            			if(!player.hasPermission("Clans.list")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(args.length != 1){//INVALID ARGUMENTS
             				player.sendMessage(ChatColor.RED + "Invalid use of command. Proper use is /team list");
             			}
             			else{//GET TEAM LIST
@@ -199,7 +219,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM INFO - Prints info about a team
                 	 * ============================================================================== */
             		case "INFO": 
-            			if(args.length == 1){//DISPLAY YOUR TEAM INFO
+            			if(!player.hasPermission("Clans.info")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(args.length == 1){//DISPLAY YOUR TEAM INFO
             				 if(!tPlayer.hasTeam()){//DOESNT HAVE TEAM
             					 player.sendMessage(ChatColor.RED + "You are not in a team. Use /team info <TEAMNAME> to look up a team's info.");
             					 return true;
@@ -234,11 +258,15 @@ public class Clans extends JavaPlugin {
                      *	TEAM ONLINE - Prints players in team that are online
                      * ============================================================================== */   
             		case "ONLINE": 
-            			 if(!tPlayer.hasTeam()) {//NOT ON A TEAM
+            			if(!player.hasPermission("Clans.online")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()) {//NOT ON A TEAM
              				player.sendMessage(ChatColor.RED + "You are not on a team.");
              				return true;
-            			 }
-             			 else {//CHECK ONLINE TEAM MEMBERS
+            			}
+             			else {//CHECK ONLINE TEAM MEMBERS
              				 String teamKey = tPlayer.getTeamKey();
              				 Team team = Teams.get(tPlayer.getTeamKey());
              				 Player[] onlineList = getServer().getOnlinePlayers();
@@ -258,13 +286,17 @@ public class Clans extends JavaPlugin {
              				onlineMembers = onlineMembers.substring(0,onlineMembers.length()-2);
              				player.sendMessage(team.getColor() + "[" + teamKey + "] (" + count +"/"+ team.getTeamSize() + ") Online: ");
              				player.sendMessage(ChatColor.GRAY + onlineMembers);             				 
-             			 }
+             			}
             			break;
                 	/* ==============================================================================
                 	 *	TEAM LEAVE - Leave a team
                 	 * ============================================================================== */
-            		case "LEAVE":         			
-            			if(!tPlayer.hasTeam()){ // PLAYER DOES NOT HAVE A TEAM
+            		case "LEAVE":   
+            			if(!player.hasPermission("Clans.leave")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){ // PLAYER DOES NOT HAVE A TEAM
             				player.sendMessage(ChatColor.RED + "You are not in a team");
             				return true;
             			}
@@ -283,7 +315,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM TK - Toggles friendly fire
                 	 * ============================================================================== */
             		case "TK": 
-            			if(args.length != 2) {//INVALID ARGUMENTS
+            			if(!player.hasPermission("Clans.tktoggle")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(args.length != 2) {//INVALID ARGUMENTS
             				player.sendMessage(ChatColor.RED + "Invalid number of arguments.");
             				return true;
             			}
@@ -312,7 +348,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM KICK - Kicks a player from a team
                 	 * ============================================================================== */
             		case "KICK": 
-            			if(args.length == 1){ //NOT ENOUGH ARGS
+            			if(!player.hasPermission("Clans.kick")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(args.length == 1){ //NOT ENOUGH ARGS
             				player.sendMessage(ChatColor.RED + "You didn't kick anyone");
             				return true;
             			}
@@ -342,7 +382,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM RCREATE | RANKCREATE - Creates a new rank at the bottom of the team
                 	 * ============================================================================== */
             		case "RCREATE": case "RANKCREATE": 
-            			if(!tPlayer.hasTeam()){ //NO TEAM
+            			if(!player.hasPermission("Clans.rankcreate")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You must be in a team first.");
             				return true;
             			}
@@ -368,7 +412,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM RSET | RANKSET - Sets a player's rank
                 	 * ============================================================================== */
             		case "RSET": case "RANKSET": 
-            			if(!tPlayer.hasTeam()){ //NO TEAM
+            			if(!player.hasPermission("Clans.rankset")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You must be in a team first.");
             				return true;
             			}
@@ -417,7 +465,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM RRENAME | RANKRENAME - Sets a rank's name
                 	 * ============================================================================== */
             		case "RRENAME": case "RANKRENAME": 
-            			if(!tPlayer.hasTeam()){ //NO TEAM
+            			if(!player.hasPermission("Clans.rankrename")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You must be in a team first.");
             				return true;
             			}
@@ -486,7 +538,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM RINFO | RANKINFO - Prints permissions of a rank
                 	 * ============================================================================== */
             		case "RINFO": case "RANKINFO": 
-            			if(!tPlayer.hasTeam()){//NOT IN TEAM
+            			if(!player.hasPermission("Clans.rankinfo")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){//NOT IN TEAM
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
             				return true;
             			}
@@ -524,8 +580,12 @@ public class Clans extends JavaPlugin {
                 	/* ==============================================================================
                 	 *	TEAM RPERMISSION | RANKPERMISSION - Sets a permission of a rank
                 	 * ============================================================================== */
-            		case "RPERMISSION": case "RANKPERMISSION": 
-            			if(!tPlayer.hasTeam()){
+            		case "RPERMISSION": case "RANKPERMISSION":
+            			if(!player.hasPermission("Clans.rankpermission")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
             				return true;
             			}
@@ -581,7 +641,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM RDELETE | RANKDELETE - Removes a rank and moves all players inside to bottom rank
                 	 * ============================================================================== */
             		case "RDELETE": case "RANKDELETE": 
-            			if(!tPlayer.hasTeam()){
+            			if(!player.hasPermission("Clans.rankdelete")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
             				return true;
             			}
@@ -618,7 +682,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM DISBAND - Disbands the entire team
                 	 * ============================================================================== */
             		case "DISBAND": 
-            			if(!tPlayer.hasTeam()){//NO TEAM
+            			if(!player.hasPermission("Clans.disband")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){//NO TEAM
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
             				return true;
             			}
@@ -641,6 +709,10 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM TAG - Sets a team's tag
                 	 * ============================================================================== */
             		case "TAG": 
+            			if(!player.hasPermission("Clans.tag")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
             			if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
             				return true;
@@ -671,7 +743,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM COLOR | COLOUR - Sets a team's color
                 	 * ============================================================================== */
             		case "COLOR": case "COLOUR": 
-            			if(!tPlayer.hasTeam()){
+            			if(!player.hasPermission("Clans.color")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
             				return true;
             			}
@@ -698,7 +774,11 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM MOTD - Set's a team's Message of the Day, prints if no argument 
                 	 * ============================================================================== */
             		case "MOTD": 
-            			if(!tPlayer.hasTeam()){ //NO TEAM
+            			if(!player.hasPermission("Clans.motd")) {
+            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				return true;
+            			}
+            			else if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
             				return true;
             			}
@@ -777,6 +857,10 @@ public class Clans extends JavaPlugin {
             }
             else if(commandName.equals("t"))
             {
+    			if(!player.hasPermission("Clans.teamchat")) {
+    				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+    				return true;
+    			}
    			 	if(!tPlayer.hasTeam()) {
    			 		player.sendMessage(ChatColor.RED + "You are not on a team.");
    			 		return true;
@@ -818,11 +902,12 @@ public class Clans extends JavaPlugin {
             }
             else if(commandName.equals("rules"))
             {
-            	player.sendMessage(ChatColor.RED + "Rules:");
+            	player.sendMessage(ChatColor.DARK_RED + "Rules:");
             	player.sendMessage(ChatColor.RED + "1. Do not use cheats or client modifications that provide you with an unfair advantage.");
             	player.sendMessage(ChatColor.RED + "2. Do not log out in order to avoid combat with another player.");
             	player.sendMessage(ChatColor.RED + "3. Do not spam chat.");
-            	player.sendMessage(ChatColor.RED + "Allowed: Total destruction, looting, and killing.");
+            	player.sendMessage(ChatColor.GREEN + "Allowed: Total destruction, looting, and killing.");
+            	player.sendMessage(ChatColor.AQUA + "Note: Creating a team requires signup on our forum at http://KingdomsMC.com");
             }
             else
             {

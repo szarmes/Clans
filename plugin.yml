@@ -22,3 +22,84 @@ commands:
     usage: |
            Incorrect usage of /<command>. Examples:
            /<command> - lists commands
+permissions:
+    Clans.*:
+        description: Gives access to all commands
+        children:
+            Clans.kick: true
+            Clans.create: true
+            Clans.invite: true
+            Clans.accept: true
+            Clans.reject: true
+            Clans.list: true
+            Clans.info: true
+            Clans.online: true
+            Clans.tktoggle: true
+            Clans.kick: true
+            Clans.rankcreate: true
+            Clans.rankset: true
+            Clans.rankrename: true
+            Clans.rankinfo: true
+            Clans.rankpermission: true
+            Clans.disband: true
+            Clans.tag: true
+            Clans.color: true
+            Clans.motd: true
+            Clans.teamchat: true
+    Clans.kick:
+        description: Allows you to kick a user from your team.
+        default: op
+    Clans.create:
+        description: Allows you to create a team.
+        default: op
+    Clans.invite:
+        description: Allows you to invite to a team.
+        default: op
+    Clans.accept:
+        description: Allows you to join a team.
+        default: op
+    Clans.reject:
+        description: Allows you to reject a team's invite.
+        default: op
+    Clans.list:
+        description: Allows you to list teams.
+        default: op
+    Clans.info:
+        description: Allows you to see a team's info.
+        default: op
+    Clans.online:
+        description: Allows you to see a team's online players.
+        default: op
+    Clans.tktoggle:
+        description: Allows you to toggle team killing options.
+        default: op
+    Clans.rankcreate:
+        description: Allows you to create a team rank.
+        default: op
+    Clans.rankset:
+        description: Allows you to set a player's team rank.
+        default: op
+    Clans.rankrename:
+        description: Allows you to rename a team rank.
+        default: op
+    Clans.rankinfo:
+        description: Allows you to see a rank's properties.
+        default: op
+    Clans.rankpermission:
+        description: Allows you to set a rank's permissions.
+        default: op
+    Clans.disband:
+        description: Allows you to disband your team.
+        default: op
+    Clans.tag:
+        description: Allows you to set your team's tag in chat.
+        default: op
+    Clans.color:
+        description: Allows you to set your team's color.
+        default: op
+    Clans.motd:
+        description: Allows you to set your team's motd.
+        default: op
+    Clans.teamchat:
+        description: Allows you to use team chat.
+        default: op
