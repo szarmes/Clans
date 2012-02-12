@@ -1,6 +1,6 @@
 name: Clans
 main: com.Kingdoms.Clans.Clans
-version: 2.0.1
+version: 2.0.2
 commands:
   team:
     description: All team commands
