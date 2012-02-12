@@ -46,6 +46,7 @@ permissions:
             Clans.color: true
             Clans.motd: true
             Clans.teamchat: true
+            Clans.leave: true
     Clans.kick:
         description: Allows you to kick a user from your team.
         default: op
@@ -101,5 +102,8 @@ permissions:
         description: Allows you to set your team's motd.
         default: op
     Clans.teamchat:
+        description: Allows you to use team chat.
+        default: op
+    Clans.leave:
         description: Allows you to use team chat.
         default: op
