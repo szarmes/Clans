@@ -20,8 +20,8 @@ public class ClansPlayerListener extends PlayerListener {
     	if(!event.isCancelled())
     	{
     		Player p = event.getPlayer();
-    		String fulltag = "{CLANCOLOR}[{CLANTAG}] ";
-    		String format = "{PLAYER} {FULLTAG}{WHITE}: {MSG}";
+    		String fulltag = plugin.getClansConfig().getTagFormat();
+    		String format = plugin.getClansConfig().getMessageFormat();
     		event.setFormat(insertData(format,fulltag,p.getDisplayName()));
     	}
     }
@@ -32,6 +32,10 @@ public class ClansPlayerListener extends PlayerListener {
     	else
     		plugin.updateUserDate(PlayerName);
     		//add new player
+    	
+    	//If player has team and motd, print it
+    	if (!plugin.getTeamsMOTD(PlayerName).equalsIgnoreCase(""))
+    		event.getPlayer().sendMessage(plugin.getTeamsMOTD(PlayerName));
     }
     private String insertData(String format, String tag, String PlayerName)
     {
