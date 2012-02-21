@@ -49,16 +49,17 @@ public class Clans extends JavaPlugin {
 	private final ClansPlayerListener playerListener = new ClansPlayerListener(this);
 	
 	
-	public void onEnable() {
-		
+	public void onEnable() {       
+        //Config
+        config = new ClansConfig();
+        
+        
 		PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
         
         if(config.UseTags())
         	pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
         
-        //Config
-        config = new ClansConfig();
 		//Team File
 		TeamsFile = new File("plugins/Clans/Teams.yml");
 		//Players File

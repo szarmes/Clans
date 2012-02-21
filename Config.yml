@@ -7,8 +7,8 @@ General:
 
 Chat:
     Use Tags: true
-    Tag Format: '[{CLANCOLOR}[{CLANTAG}]'
-    Message Format: '{PLAYER} {FULLTAG}{WHITE} : {MSG}'
+    Tag Format: '[{CLANCOLOR}[{CLANTAG}] '
+    Message Format: '{PLAYER} {FULLTAG}{WHITE}: {MSG}'
 
 Areas:
     Use Areas: true

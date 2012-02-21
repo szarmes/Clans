@@ -70,8 +70,8 @@ public class ClansConfig {
 		
 		//Chat
 		UseTags = true;
-		TagFormat = "[{CLANCOLOR}[{CLANTAG}]";
-		MessageFormat = "{PLAYER} {FULLTAG}{WHITE} : {MSG}";
+		TagFormat = "{CLANCOLOR}[{CLANTAG}] ";
+		MessageFormat = "{PLAYER} {FULLTAG}{WHITE}: {MSG}";
 		
 		//Areas
 		UseAreas = true;
@@ -278,4 +278,28 @@ public class ClansConfig {
 	public int getCleanPlayerDays() {
 		return CleanPlayerDays;
 	}
+	@Override
+	public String toString() {
+		return "ClansConfig [Currency=" + Currency + ", UseScore=" + UseScore
+				+ ", UseELO=" + UseELO + ", AllowTKToggle=" + AllowTKToggle
+				+ ", TeamTKDefault=" + TeamTKDefault + ", UseTags=" + UseTags
+				+ ", TagFormat=" + TagFormat + ", MessageFormat="
+				+ MessageFormat + ", UseAreas=" + UseAreas + ", AreaMaxSize="
+				+ AreaMaxSize + ", CapturableAreas=" + CapturableAreas
+				+ ", AllowUpgrades=" + AllowUpgrades + ", UPIntruderAlert="
+				+ UPIntruderAlert + ", AlertThreshold=" + AlertThreshold
+				+ ", UPOfflineDamage=" + UPOfflineDamage
+				+ ", OfflineDamageAmount=" + OfflineDamageAmount
+				+ ", UPBlockResist=" + UPBlockResist
+				+ ", ResistanceMultiplier=" + ResistanceMultiplier
+				+ ", TagCost=" + TagCost + ", AreaCost=" + AreaCost
+				+ ", incCapacityCost=" + incCapacityCost + ", incSizeCost="
+				+ incSizeCost + ", UPAlertsCost=" + UPAlertsCost
+				+ ", UPDamageCost=" + UPDamageCost + ", UPResistCost="
+				+ UPResistCost + ", ReqMemColor=" + ReqMemColor
+				+ ", ReqMemArea=" + ReqMemArea + ", ReqScoreColor="
+				+ ReqScoreColor + ", ReqScoreCape=" + ReqScoreCape
+				+ ", CleanPlayerDays=" + CleanPlayerDays + "]";
+	}
+	
 }
