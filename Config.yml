@@ -1,0 +1,47 @@
+General:
+    Currency: 41
+    Use Score: true
+    Use ELO: true
+    Allow TK Toggle: true
+    Team TK Default: false
+
+Chat:
+    Use Tags: true
+    Tag Format: '[{CLANCOLOR}[{CLANTAG}]'
+    Message Format: '{PLAYER} {FULLTAG}{WHITE} : {MSG}'
+
+Areas:
+    Use Areas: true
+    Max Size: 200
+    Capturable: true
+    Allow Upgrades: true
+
+    UP Intruder Alert: true
+    Alert Threshold: 30
+
+    UP Offline Defense: true
+    Offline Damage: 2
+
+    UP Block Resist: true
+    Resistance Multiplier: 3
+
+Costs:
+    Tag: 5
+    Area: 10
+    Increase Capacity: 5
+    Increase Size: 10
+    Alert Upgrade: 10
+    Damage Upgrade: 25
+    Resist Upgrade: 50
+
+Req Member Counts:
+    Tag Color: 10
+    Area: 10
+
+Req Score Ranks:
+    Color: 10
+    Cape: 10
+
+Clean Up:
+    Clear Player Days: 14
+

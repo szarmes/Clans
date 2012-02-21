@@ -16,9 +16,11 @@ import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,9 +31,9 @@ import org.yaml.snakeyaml.Yaml;
 public class Clans extends JavaPlugin {
 
 	//Clans Data
-	public static HashMap<String, TeamPlayer> Users = new HashMap<String, TeamPlayer>();
-	public static HashMap<String, Team> Teams = new HashMap<String, Team>(); 
-	public static HashMap<String, TeamArea> TeamAreas = new HashMap<String, TeamArea>();
+	private HashMap<String, TeamPlayer> Users = new HashMap<String, TeamPlayer>();
+	private HashMap<String, Team> Teams = new HashMap<String, Team>(); 
+	private HashMap<String, TeamArea> TeamAreas = new HashMap<String, TeamArea>();
 
 	//Files
 	private File TeamsFile;
@@ -40,18 +42,23 @@ public class Clans extends JavaPlugin {
 	//Logger
 	private Logger log = Logger.getLogger("Minecraft");//Define your logger
 	
+	//Config
+	private ClansConfig config;
+	
 	//Listeners
 	private final ClansPlayerListener playerListener = new ClansPlayerListener(this);
 	
 	
-
-
 	public void onEnable() {
 		
 		PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
-        pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
         
+        if(config.UseTags())
+        	pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
+        
+        //Config
+        config = new ClansConfig();
 		//Team File
 		TeamsFile = new File("plugins/Clans/Teams.yml");
 		//Players File
@@ -85,7 +92,7 @@ public class Clans extends JavaPlugin {
             		 * ============================================================================== */
             		case "CREATE": 
             			if(!player.hasPermission("Clans.create")) {
-            				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            				player.sendMessage(ChatColor.RED + "You must sign up on our forums at http://KingdomsMC.com and request membership in order to use this command.");
             				return true;
             			}
             			else if(args.length < 2) {//INVALID ARGUMENTS
@@ -315,7 +322,7 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM TK - Toggles friendly fire
                 	 * ============================================================================== */
             		case "TK": 
-            			if(!player.hasPermission("Clans.tktoggle")) {
+            			if(!player.hasPermission("Clans.tktoggle") || !config.AllowTKToggle()) {
             				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             				return true;
             			}
@@ -709,12 +716,17 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM TAG - Sets a team's tag
                 	 * ============================================================================== */
             		case "TAG": 
-            			if(!player.hasPermission("Clans.tag")) {
+            			if(!player.hasPermission("Clans.tag") || !config.UseTags()) {
             				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             				return true;
             			}
-            			if(!tPlayer.hasTeam()){ //NO TEAM
+            			else if(!tPlayer.hasTeam()){ //NO TEAM
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            				return true;
+            			}
+            			else if(!canAfford(PlayerName,config.getTagCost()))
+            			{
+            				player.sendMessage(ChatColor.RED + "Using this command costs " + config.getTagCost() + " of " + getCurrencyName() + " (Must have in Inventory).");
             				return true;
             			}
             			else if(!getTeam(PlayerName).isLeader(PlayerName)){
@@ -736,6 +748,7 @@ public class Clans extends JavaPlugin {
             			else {//CHANGE TAG
             				Teams.get(tPlayer.getTeamKey()).setTeamTag(args[1]);
             				player.sendMessage(ChatColor.GREEN +"Tag has been changed to [" + getTeam(PlayerName).getTeamTag() + "].");
+            				spend(PlayerName, config.getTagCost());
             				saveTeams();
             			}
             			break;
@@ -749,6 +762,10 @@ public class Clans extends JavaPlugin {
             			}
             			else if(!tPlayer.hasTeam()){
             				player.sendMessage(ChatColor.RED + "You are not in a team.");
+            				return true;
+            			}
+            			else if(getTeam(PlayerName).getTeamSize() < config.getReqMemColor()){
+            				player.sendMessage(ChatColor.RED + "Your team must have " + config.getReqMemColor() + " members to set color.");
             				return true;
             			}
             			else if(!getTeam(PlayerName).isLeader(PlayerName)){//ISNT LEADER
@@ -885,7 +902,7 @@ public class Clans extends JavaPlugin {
 	  				for (Player p : onlineList) {
 	  					String userTeamKey = Users.get(p.getDisplayName()).getTeamKey();
 	  					if(userTeamKey.equals(teamKey))
-	  						p.sendMessage(ChatColor.GREEN + "[TEAM] " +PlayerName + ": " + message);
+	  						p.sendMessage(ChatColor.GREEN + "[TEAM] " + ChatColor.DARK_GREEN + PlayerName + ": " + ChatColor.GREEN  + message);
 	  				 }         				 
    			 	}
             }
@@ -920,9 +937,33 @@ public class Clans extends JavaPlugin {
         	return true;
         }
 	}
-        
-        
-	
+	private boolean isInteger( String input )  
+ 	{  
+ 		try  {  
+ 			Integer.parseInt( input );  
+ 			return true;  
+ 		}  
+ 		catch( Exception e )  {  
+ 			return false;  
+ 		}  
+ 	} 
+ 	private boolean canAfford(String PlayerName, int cost)
+ 	{
+ 		boolean canAfford = false;
+ 		if(cost == 0)
+ 			canAfford = true;
+ 		else if(getServer().getPlayer(PlayerName).getInventory().contains(config.getCurrency(),cost))
+ 			canAfford = true;
+
+ 		return canAfford;
+ 	}
+ 	private void spend(String PlayerName, int cost)
+ 	{
+ 		if(cost > 0)
+ 		{
+ 			getServer().getPlayer(PlayerName).getInventory().removeItem(new ItemStack(config.getCurrency(),cost));
+ 		}
+ 	}
 	private void loadData()
 	{
 		/*
@@ -965,7 +1006,7 @@ public class Clans extends JavaPlugin {
         		Calendar cal = Calendar.getInstance();
         		cal.set(year, month, day);
         		int elo = Integer.parseInt(PlayerData.get("ELO"));
-        		Users.put(key, new TeamPlayer(elo, cal));
+        		Users.put(key, new TeamPlayer(elo, cal, config.TeamTKDefault()));
         	}
         }
 		/*
@@ -1034,6 +1075,11 @@ public class Clans extends JavaPlugin {
     		   //Add to Teams
     		   Teams.put(key, new Team(TeamList, MOTD, Score, Tag, Color));
     		   
+    		   if(Teams.get(key).getTeamSize() < config.getReqMemColor())
+    		   {
+    			   Teams.get(key).setColor("GRAY");
+    		   }
+    		   
     		   //TODO: Add Team Area Info
     	   }
        }
@@ -1095,27 +1141,19 @@ public class Clans extends JavaPlugin {
 	private void teamRemove(String PlayerName){
 		TeamPlayer tPlayer = Users.get(PlayerName);
 		Teams.get(tPlayer.getTeamKey()).removeMember(PlayerName);
+		if(Teams.get(tPlayer.getTeamKey()).getTeamSize() < config.getReqMemColor())
+			Teams.get(tPlayer.getTeamKey()).setColor("GRAY");
+		
 		Users.get(PlayerName).clearTeamKey();
 	}
-	
-	private boolean isInteger( String input )  
- 	{  
- 		try  {  
- 			Integer.parseInt( input );  
- 			return true;  
- 		}  
- 		catch( Exception e )  {  
- 			return false;  
- 		}  
- 	} 
-	
+
 	public boolean hasUser(String PlayerName)
 	{
 		return Users.containsKey(PlayerName);
 	}
 	public void makeUser(String PlayerName)
 	{
-		Users.put(PlayerName, new TeamPlayer());
+		Users.put(PlayerName, new TeamPlayer(config.TeamTKDefault()));
 		savePlayers();
 	}
 	public void updateUserDate(String PlayerName)
@@ -1123,7 +1161,26 @@ public class Clans extends JavaPlugin {
 		Users.get(PlayerName).updateLastSeen();
 		savePlayers();
 	}
-
-
-
+	public String getTeamsMOTD(String PlayerName) {
+		String motd = "";
+		if(Users.get(PlayerName).hasTeam())
+		{
+			if(getTeam(PlayerName).hasMOTD())
+			{
+				motd = "" + ChatColor.DARK_GREEN + "[Team MOTD]" + ChatColor.GREEN + getTeam(PlayerName).getMOTD();
+			}
+		}
+		return motd;
+	}
+	public String getCurrencyName()
+	{
+		String curr = "Currency";
+		if(config.getCurrency() == 41)
+			curr = "Gold Block(s)";
+		return curr;
+	}
+	public ClansConfig getClansConfig()
+	{
+		return config;
+	}
 }

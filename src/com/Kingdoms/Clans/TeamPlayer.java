@@ -15,22 +15,22 @@ public class TeamPlayer {
 	
 	
 	//For Loading from a file at start up
-	TeamPlayer(int ELOin, Calendar LastSeenin)
+	TeamPlayer(int ELOin, Calendar LastSeenin, boolean canTC)
 	{
 		ELO = ELOin;
 		LastSeen = LastSeenin;
 		TeamKey = "";
 		Invite = "";
-		canTeamKill = false;
+		canTeamKill = canTC;
 	}
 	//When player joins for the first time
-	TeamPlayer()
+	TeamPlayer(boolean canTC)
 	{
 		ELO = 1400;
 		LastSeen = getCurrentDate();
 		TeamKey = "";
 		Invite = "";
-		canTeamKill = false;
+		canTeamKill = canTC;
 	}
 	public boolean canTeamKill() {
 		return canTeamKill;

@@ -98,6 +98,10 @@ public class Team {
 	{
 		return !TeamTag.equalsIgnoreCase("");
 	}
+	public boolean hasMOTD()
+	{
+		return !TeamMOTD.equalsIgnoreCase("");
+	}
 	public TeamRank getRank(String PlayerName)
 	{
 		int RankCount = TeamList.size();
