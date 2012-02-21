@@ -674,7 +674,7 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
             				return true;	
             			}
-            			else if(team.getRankCount() < Integer.parseInt(args[2])){//RANK NUMBER DOESNT EXIST
+            			else if(team.getRankCount() < Integer.parseInt(args[1])){//RANK NUMBER DOESNT EXIST
         					player.sendMessage(ChatColor.RED + "Rank number does not exist.");
         					return true;
         				}

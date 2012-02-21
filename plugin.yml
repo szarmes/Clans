@@ -41,6 +41,7 @@ permissions:
             Clans.rankrename: true
             Clans.rankinfo: true
             Clans.rankpermission: true
+            Clans.rankdelete: true
             Clans.disband: true
             Clans.tag: true
             Clans.color: true
@@ -75,6 +76,9 @@ permissions:
         description: Allows you to toggle team killing options.
         default: op
     Clans.rankcreate:
+        description: Allows you to create a team rank.
+        default: op
+    Clans.rankdelete:
         description: Allows you to create a team rank.
         default: op
     Clans.rankset:
