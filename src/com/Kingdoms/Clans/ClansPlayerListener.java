@@ -4,17 +4,20 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
 
-public class ClansPlayerListener extends PlayerListener {
+public class ClansPlayerListener implements Listener {
     public Clans plugin;
     Logger log = Logger.getLogger("Minecraft");
     
     public ClansPlayerListener(Clans instance) {
         plugin = instance;
     }
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerChat(PlayerChatEvent event)
     {
     	if(!event.isCancelled())
@@ -25,6 +28,7 @@ public class ClansPlayerListener extends PlayerListener {
     		event.setFormat(insertData(format,fulltag,p.getDisplayName()));
     	}
     }
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event){
     	String PlayerName = event.getPlayer().getDisplayName();
     	if(!plugin.hasUser(PlayerName))

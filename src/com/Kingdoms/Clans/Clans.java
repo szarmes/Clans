@@ -13,13 +13,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
+import org.bukkit.event.EventPriority;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -54,11 +55,12 @@ public class Clans extends JavaPlugin {
         config = new ClansConfig();
         
         
-		PluginManager pm = this.getServer().getPluginManager();
-        pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+		PluginManager pm = Bukkit.getPluginManager();
+        pm.registerEvents(playerListener, this);
         
-        if(config.UseTags())
-        	pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
+        //if(config.UseTags())
+        	//pm.registerEvent(Event.PLAYER_CHAT, playerListener, EventPriority.NORMAL, this);
+        	//Fix this shit
         
 		//Team File
 		TeamsFile = new File("plugins/Clans/Teams.yml");
@@ -83,6 +85,19 @@ public class Clans extends JavaPlugin {
             Player player = (Player) sender;
             String PlayerName = player.getDisplayName();
             TeamPlayer tPlayer = Users.get(PlayerName);
+            
+            //Check Inputs, Cannot contain ' or "
+            if(args.length > 0)
+            {
+            	for(String arg : args){
+            		if(arg.contains("'") || arg.contains("'"))
+            		{
+            			player.sendMessage(ChatColor.RED + "Arguments may not contain characters \' or \".");
+            			return true;
+            		}
+            	}
+            	
+            }
             
             if(commandName.equals("team") && args.length >= 1)
             {
