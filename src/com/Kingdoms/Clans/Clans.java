@@ -34,11 +34,12 @@ public class Clans extends JavaPlugin {
 	//Clans Data
 	private HashMap<String, TeamPlayer> Users = new HashMap<String, TeamPlayer>();
 	private HashMap<String, Team> Teams = new HashMap<String, Team>(); 
-	private HashMap<String, TeamArea> TeamAreas = new HashMap<String, TeamArea>();
+	private HashMap<String, TeamArea> Areas = new HashMap<String, TeamArea>();
 
 	//Files
 	private File TeamsFile;
 	private File PlayersFile;
+	private File AreasFile;
 
 	//Logger
 	private Logger log = Logger.getLogger("Minecraft");//Define your logger
@@ -66,6 +67,8 @@ public class Clans extends JavaPlugin {
 		TeamsFile = new File("plugins/Clans/Teams.yml");
 		//Players File
 		PlayersFile = new File("plugins/Clans/Players.yml");
+		//Areas File
+		AreasFile = new File("plugins/Clans/Areas.yml");
 		//Load Data From Files
 		loadData();
 		
@@ -86,21 +89,20 @@ public class Clans extends JavaPlugin {
             String PlayerName = player.getDisplayName();
             TeamPlayer tPlayer = Users.get(PlayerName);
             
-            //Check Inputs, Cannot contain ' or "
-            if(args.length > 0)
-            {
-            	for(String arg : args){
-            		if(arg.contains("'") || arg.contains("'"))
-            		{
-            			player.sendMessage(ChatColor.RED + "Arguments may not contain characters \' or \".");
-            			return true;
-            		}
-            	}
-            	
-            }
-            
             if(commandName.equals("team") && args.length >= 1)
             {
+                //Check Inputs, Cannot contain ' or "
+                if(args.length > 0)
+                {
+                	for(String arg : args){
+                		if(arg.contains("'") || arg.contains("'"))
+                		{
+                			player.sendMessage(ChatColor.RED + "Arguments may not contain characters \' or \".");
+                			return true;
+                		}
+                	}
+                	
+                }
             	switch(args[0].toUpperCase())
             	{
             		/* ==============================================================================
@@ -121,6 +123,10 @@ public class Clans extends JavaPlugin {
             			}
             			else if(args[1].length() > 30 ){//MORE THAN 30 CHARACTERS
             				player.sendMessage(ChatColor.RED + "Team names must be less than 30 characters.");
+            				return true;
+            			}
+            			else if(args[1].contains("@server") ){//MORE THAN 30 CHARACTERS
+            				player.sendMessage(ChatColor.RED + "Team names must not contain reserved words.");
             				return true;
             			}
             			else{ //CREATE TEAM
@@ -397,7 +403,8 @@ public class Clans extends JavaPlugin {
             			else{//KICK OUT OF TEAM
             				teamRemove(args[1]);
             				player.sendMessage(ChatColor.GREEN + "You have kicked " + args[1] + " out of the team.");
-        					getServer().getPlayer(args[1]).sendMessage(ChatColor.RED + "You have been kicked out of the team.");
+            				if(getServer().getPlayer(args[1]).isOnline())
+            					getServer().getPlayer(args[1]).sendMessage(ChatColor.RED + "You have been kicked out of the team.");
             				saveTeams();
             			}
             			break;
@@ -839,7 +846,7 @@ public class Clans extends JavaPlugin {
                 	 * ============================================================================== */
             		case "HELP": 
             			if(args.length == 1){
-                   			player.sendMessage(ChatColor.RED + "Use /team help [1-4] to view each page.");
+                   			player.sendMessage(ChatColor.RED + "Use /team help 1...4 to view each page.");
                    			return true;
                    		}
             			else if(args[1].equalsIgnoreCase("1")) {
@@ -868,7 +875,7 @@ public class Clans extends JavaPlugin {
                    			player.sendMessage(ChatColor.RED + "/team rankcreate <rankname>"+ChatColor.GRAY +" - Creates new rank at the bottom of the rank structure.");
                    			player.sendMessage(ChatColor.RED + "/team rankrename <ranknumber> <rankname>"+ChatColor.GRAY +" - Renames a specified rank.");
                    			player.sendMessage(ChatColor.RED + "/team rankset <playername> <ranknumber>"+ChatColor.GRAY +" - Sets the rank of a team member.");
-                   			player.sendMessage(ChatColor.RED + "/team rankmoveall <oldranknumber> <newranknumber>"+ChatColor.GRAY +" - Moves all members of a rank to a new rank.");
+                   			player.sendMessage(ChatColor.RED + "/team rankmassmove <oldranknumber> <newranknumber>"+ChatColor.GRAY +" - Moves all members of a rank to a new rank.");
                    			player.sendMessage(ChatColor.RED + "/team rankinfo <ranknumber>"+ChatColor.GRAY +" - Outputs a rank's permissions.");
                    			player.sendMessage(ChatColor.RED + "/team rankpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true/false>"+ChatColor.GRAY +" - Sets a rank's permissions.");
                    			player.sendMessage(ChatColor.RED + "/team rankdelete <ranknumber>"+ChatColor.GRAY +" - Deletes a rank.");
@@ -884,7 +891,144 @@ public class Clans extends JavaPlugin {
                 	 *	TEAM AREA - THIS ISNT SET UP CORRECTLY YET
                 	 * ============================================================================== */
             		case "AREA": 
-            			break;           			
+            			if (args.length < 2) {
+                   			player.sendMessage(ChatColor.RED + "Improper use of command.");
+            				return true;
+            			}
+                    	switch(args[1].toUpperCase())
+                    	{
+	                		/* ==============================================================================
+	                		 *	TEAM AREA CLAIM - Claims a team area for currency.
+	                		 * ============================================================================== */
+	                		case "CLAIM":
+	                			if(!player.hasPermission("Clans.area.claim")) {
+	                				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+	                				return true;
+	                			}
+	                			else if(args.length <= 2){
+	                       			player.sendMessage(ChatColor.RED + "Improper use of command, Usage is /team area <Area Name>.");
+	                       			return true;
+	                       		}
+	                			else if(!tPlayer.hasTeam()){//NO TEAM
+	                				player.sendMessage(ChatColor.RED + "You are not in a team.");
+	                				return true;
+	                			}
+	                			else if (!getTeam(PlayerName).isLeader(PlayerName)) {//MUST BE LEADER
+	                				player.sendMessage(ChatColor.RED + "You must be the leader to disband the team.");
+	                				return true;
+	                			}
+	                			else if(!canAfford(PlayerName,config.getAreaCost()))
+	                			{
+	                				player.sendMessage(ChatColor.RED + "Using this command costs " + config.getAreaCost() + " of " + getCurrencyName() + " (Must have in Inventory).");
+	                				return true;
+	                			}
+	                			else
+	                			{
+                    				int x = player.getLocation().getBlockX();
+                    				int z = player.getLocation().getBlockZ();
+                    				String world = player.getWorld().getName();
+                    				String test = checkAreaMax(x,z,world,tPlayer.getTeamKey());
+                    				if(!test.equalsIgnoreCase("") && !test.equalsIgnoreCase(tPlayer.getTeamKey()))
+                    				{
+    	                				player.sendMessage(ChatColor.RED + "You cannot claim an area here, it is to close to a nearby area.");
+    	                				return true;
+                    				}
+                    				else
+                    				{
+	                    				if(Areas.containsKey(tPlayer.getTeamKey()))	{
+		                					//Move Area
+		                					spend(player.getDisplayName(),config.getAreaCost());
+		                					Areas.get(tPlayer.getTeamKey()).setxLoc(x);
+		                					Areas.get(tPlayer.getTeamKey()).setzLoc(z);
+		                					player.sendMessage(ChatColor.GREEN + "Team Area has been moved.");
+		                				}
+		                				else {
+		                					spend(player.getDisplayName(),config.getAreaCost());
+		                    				int i;
+		                    				String AreaName = args[1];
+		                    				for(i=2;i<args.length;i++)
+		                    					AreaName += " " + args[i];
+		                    				
+		                    				Areas.put(tPlayer.getTeamKey(),new TeamArea(AreaName, x, z, 25, tPlayer.getTeamKey()));
+		                    				player.sendMessage(ChatColor.GREEN + "Team area " + AreaName + " was sucessfully created.");
+		                				}
+                    				}
+	                			}
+	                		break;
+	                		/* ==============================================================================
+	                		 *	TEAM AREA INFO - Prints a team's area info.
+	                		 * ============================================================================== */
+	                		case "INFO":     
+	                			if(!player.hasPermission("Clans.area.info")) {
+	                				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+	                				return true;
+	                			}
+	                			else if(!tPlayer.hasTeam()){//NO TEAM
+	                				player.sendMessage(ChatColor.RED + "You are not in a team.");
+	                				return true;
+	                			}
+	                			else if(!getRank(PlayerName).canSeeAreaInfo()){ //CAN Area Info
+	                    			player.sendMessage(ChatColor.RED + "You lack sufficient permissions to set ranks on this team");
+	                    			return true;
+	                    		}
+	                			else if(Areas.containsKey(tPlayer.getTeamKey())){ //CAN Area Info
+	                    			player.sendMessage(ChatColor.RED + "Your team does not have a team area.");
+	                    			return true;
+	                    		}
+	                			else
+	                			{
+	                				TeamArea a = Areas.get(tPlayer.getTeamKey());
+	                				player.sendMessage(ChatColor.DARK_GREEN +"Areaname: " + ChatColor.GREEN + a.getAreaName());
+	                				player.sendMessage(ChatColor.DARK_GREEN +"Owned By: " + ChatColor.GREEN + tPlayer.getTeamKey());
+	                				player.sendMessage(ChatColor.DARK_GREEN +"Held By: " + ChatColor.GREEN + a.getHolder());
+	                				
+	                				int xMax = a.getxLoc()+a.getAreaRadius();
+	                				int xMin = a.getxLoc()-a.getAreaRadius();
+	                				int zMax = a.getzLoc()+a.getAreaRadius();
+	                				int zMin = a.getzLoc()-a.getAreaRadius();
+	                				player.sendMessage(ChatColor.DARK_GREEN +"Location: " + ChatColor.GREEN + "  MAX: {"+xMax + ", "+zMax +"}   MIN: {"+xMin + ", "+zMin +"}");
+	                				player.sendMessage(ChatColor.DARK_GREEN +"Size: " + a.getAreaRadius()*2 + "x"+ a.getAreaRadius()*2);
+	                				
+	                				String Upgrades = "";
+	                				if(a.hasIntruderAlert())
+	                					Upgrades += "IntruderAlert";
+	                				if(a.hasBlockDestroyDamage())
+	                				{
+	                					if(!Upgrades.equalsIgnoreCase(""))
+	                						Upgrades += ", DestroyDamage";
+	                					else
+	                						Upgrades += "DestroyDamage";
+	                				}
+	                				if(a.hasBlockResistance())
+	                				{
+	                					if(!Upgrades.equalsIgnoreCase(""))
+	                						Upgrades += ", Resistance";
+	                					else
+	                						Upgrades += "Resistance";
+	                				}
+	                				if(a.hasAreaCleanse())
+	                				{
+	                					if(!Upgrades.equalsIgnoreCase(""))
+	                						Upgrades += ", Cleanse";
+	                					else
+	                						Upgrades += "Cleanse";
+	                				}
+                					if(!Upgrades.equalsIgnoreCase(""))
+                						Upgrades += "None";
+	                				player.sendMessage(ChatColor.DARK_GREEN +"Upgrades: " + ChatColor.GREEN + Upgrades);
+	                			}
+	                		break;
+                    		/* ==============================================================================
+                    		 *	TEAM AREA UPGRADE - Upgrades an area for currency.
+                    		 * ============================================================================== */
+                    		case "UPGRADE":          
+                    		break;
+                    		/* ==============================================================================
+                    		 *	TEAM AREA LIST - Lists team areas currently held a team.
+                    		 * ============================================================================== */
+                    		case "LIST":          
+                    		break;
+                    	}         			
             	}
             	return true;
             }
@@ -952,6 +1096,53 @@ public class Clans extends JavaPlugin {
         {
         	return true;
         }
+	}
+	//Finds a team area given a point, returns the team name who owns the area if found
+	public String findArea(int x, int z, String world)
+	{
+		String result = "";	
+		for(String key : Areas.keySet()){
+			if(Areas.get(key).inArea(x, z, world))
+				return key;
+		}
+		return result;
+	}
+	//Used for creating and moving areas
+	private String checkAreaMax(int x, int z, String world, String team)
+	{
+		String result = "";
+		for(String key : Areas.keySet())
+		{
+			TeamArea a = Areas.get(key);
+			int maxRadius = config.getAreaMaxSize()/2;
+			if(inAreaMax(x+maxRadius,z+maxRadius,world,a)
+					||inAreaMax(x+maxRadius,z-maxRadius,world,a)
+					||inAreaMax(x-maxRadius,z+maxRadius,world,a)
+					||inAreaMax(x-maxRadius,z-maxRadius,world,a))
+			{
+				if(!team.equalsIgnoreCase(key)) {
+					result = key;
+					break;
+				}
+				else if (result.equalsIgnoreCase("")) {
+					result = key;
+				}
+			}
+		}
+		return result;
+	}
+	private boolean inAreaMax(int x, int z, String world, TeamArea a)
+	{
+		boolean inArea = false;
+		int maxRadius = config.getAreaMaxSize()/2;
+		if(a.getWorld().equalsIgnoreCase(world)) {
+			if(a.getxLoc()-maxRadius <= x && x <= a.getxLoc()+maxRadius) {
+	    		if(a.getzLoc()-maxRadius <= z && z <= a.getzLoc()+maxRadius) {
+	    			inArea = true;
+	    		}
+			}
+		}
+		return inArea;
 	}
 	private boolean isInteger( String input )  
  	{  
@@ -1095,10 +1286,86 @@ public class Clans extends JavaPlugin {
     		   {
     			   Teams.get(key).setColor("GRAY");
     		   }
-    		   
-    		   //TODO: Add Team Area Info
     	   }
        }
+		/*
+		 * LOAD AREAS FROM FILE
+		 * 
+		 */
+       if(config.UseAreas())
+       {
+    		HashMap<String,HashMap<String,Object>> al = null;
+    		Yaml yamlAreas = new Yaml();
+    		reader = null;
+            try {
+                reader = new FileReader(AreasFile);
+            } catch (final FileNotFoundException fnfe) {
+            	 System.out.println("Areas.YML Not Found!");
+            	   try{
+    	            	  String strManyDirectories="plugins/Clans";
+    	            	  boolean success = (new File(strManyDirectories)).mkdirs();
+    	            	  }catch (Exception e){//Catch exception if any
+    	            	  System.err.println("Error: " + e.getMessage());
+    	            	  }
+            } finally {
+                if (null != reader) {
+                    try {
+                        al = (HashMap<String,HashMap<String,Object>>)yamlPlayers.load(reader);
+                        reader.close();
+                    } catch (final IOException ioe) {
+                        System.err.println("We got the following exception trying to clean up the reader: " + ioe);
+                    }
+                }
+            }
+            if(al != null)
+            {
+            	for(String key : al.keySet())
+            	{
+            		HashMap<String,Object> AreaData = al.get(key);
+            		String areaType = (String) AreaData.get("Type");
+            		if(areaType.equalsIgnoreCase("Clan"))
+            		{
+            			String ClanKey = key;
+            			String areaName = (String) AreaData.get("Name");
+            			String hold = (String) AreaData.get("Holder");
+            			int xLoc = Integer.parseInt((String) AreaData.get("X"));
+            			int zLoc = Integer.parseInt((String) AreaData.get("Z"));
+            			String World = (String) AreaData.get("World");
+            			int areaRadius = Integer.parseInt((String) AreaData.get("Radius"));
+            			HashMap<String,Boolean> upgrades = (HashMap<String,Boolean>)AreaData.get("Upgrades");
+            			boolean BlockDestroyDamage = upgrades.get("BlockDestroyDamage");
+            			boolean BlockResistance = upgrades.get("BlockResistance");
+            			boolean AreaCleanse = upgrades.get("AreaCleanse");
+            			boolean IntruderAlert = upgrades.get("IntruderAlert");
+            			
+            			Areas.put(ClanKey, new TeamArea(areaName,xLoc, zLoc, World, areaRadius, hold, IntruderAlert,  BlockResistance, BlockDestroyDamage, AreaCleanse));
+            		}
+            		//TODO: Implement other types of areas
+            	}
+            }
+    	   
+       }
+	}
+	private void saveAreas()
+	{
+		//Print Areas to File.
+		  if(config.UseAreas())
+	      {
+			try{
+				FileWriter fstream = new FileWriter(AreasFile, false);
+				BufferedWriter out = new BufferedWriter(fstream);
+				out.write("");
+				for(String key : Areas.keySet())
+				{
+					out.write("\'"+ key + "\':\n");
+					out.write(Areas.get(key).getSaveString());
+				}
+				out.close();
+				fstream.close();
+			}catch (Exception e){//Catch exception if any
+				System.err.println("Error: " + e.getMessage());
+			}
+	      }
 	}
 	private void saveTeams()
 	{
@@ -1183,7 +1450,7 @@ public class Clans extends JavaPlugin {
 		{
 			if(getTeam(PlayerName).hasMOTD())
 			{
-				motd = "" + ChatColor.DARK_GREEN + "[Team MOTD]" + ChatColor.GREEN + getTeam(PlayerName).getMOTD();
+				motd = "" + ChatColor.DARK_GREEN + "[Team MOTD] " + ChatColor.GREEN + getTeam(PlayerName).getMOTD();
 			}
 		}
 		return motd;
