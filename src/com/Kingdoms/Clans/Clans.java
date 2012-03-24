@@ -57,6 +57,7 @@ public class Clans extends JavaPlugin {
 	
 	//Extras
 	private HashMap<Location,ResistantBlock> ResistBlocks = new HashMap<Location,ResistantBlock>();
+	private int resistIDCount = 0;
 	
 	
 	public void onEnable() {       
@@ -81,6 +82,8 @@ public class Clans extends JavaPlugin {
 		//Load Data From Files
 		loadData();
 		countOnlineTeamPlayers();
+		
+		resistIDCount = 0;
 		
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
@@ -1738,7 +1741,8 @@ public class Clans extends JavaPlugin {
 		}
 		else //if (getServer().getWorld("world").getBlockAt(block.getLocation()).getTypeId() != config.getResistanceBlock()) //if already obsidian do nothing
 		{
-			ResistBlocks.put(block.getLocation(), new ResistantBlock(this,block.getState()));
+			ResistBlocks.put(block.getLocation(), new ResistantBlock(this,block.getState(),resistIDCount));
+			resistIDCount++;
 			getServer().getWorld("world").getBlockAt(block.getLocation()).setTypeId(49);
 			getServer().getScheduler().scheduleSyncDelayedTask(this, ResistBlocks.get(block.getLocation()), 5100L);
 		}
@@ -1749,7 +1753,12 @@ public class Clans extends JavaPlugin {
 			//Cancels Block
 			getServer().getWorld("world").getBlockAt(block.getLocation()).setType(ResistBlocks.get(block.getLocation()).getState().getType());
 			getServer().getWorld("world").getBlockAt(block.getLocation()).setData(ResistBlocks.get(block.getLocation()).getState().getRawData());
-			getServer().getWorld("world").getBlockAt(block.getLocation()).breakNaturally();
+			if(getServer().getWorld("world").getBlockAt(block.getLocation()).getTypeId() != 49) //should fix double obsidian problem
+				getServer().getWorld("world").getBlockAt(block.getLocation()).breakNaturally();
+			else {
+				getServer().getWorld("world").getBlockAt(block.getLocation()).setTypeId(0);
+				getServer().getWorld("world").dropItem(block.getLocation(), new ItemStack(49));
+			}
 			ResistBlocks.remove(block.getLocation());
 		}
 	}
@@ -1787,24 +1796,39 @@ public class Clans extends JavaPlugin {
 			}
 		}  
 	}
+	//Called when a team member resets the block
 	public void ResetResistBlock(Location location) {
-		//FIXME: need to give blocks IDs for start so if you get rid of a block, then place it, the thread from the old block doesn't reset it
 		if(ResistBlocks.containsKey(location)) {
 			//set back to normal
-			getServer().getWorld("world").getBlockAt(location).setType(ResistBlocks.get(location).getState().getType());
-			getServer().getWorld("world").getBlockAt(location).setData(ResistBlocks.get(location).getState().getRawData());
-			ResistBlocks.remove(location);
+				getServer().getWorld("world").getBlockAt(location).setType(ResistBlocks.get(location).getState().getType());
+				getServer().getWorld("world").getBlockAt(location).setData(ResistBlocks.get(location).getState().getRawData());
+				ResistBlocks.remove(location);
+		}
+	}
+	//scheduler reset
+	public void ResetResistBlock(Location location, int id) {
+		//FIXME: need to give blocks IDs for start so if you get rid of a block, then place it, the thread from the old block doesn't reset it
+		if(ResistBlocks.containsKey(location)) {
+			if(ResistBlocks.get(location).getExtTime() == 0) {
+				//set back to normal
+				if(ResistBlocks.get(location).getID() == id) { //might fix id problem
+					getServer().getWorld("world").getBlockAt(location).setType(ResistBlocks.get(location).getState().getType());
+					getServer().getWorld("world").getBlockAt(location).setData(ResistBlocks.get(location).getState().getRawData());
+					ResistBlocks.remove(location);
+				}
+			}
 		}
 	}
 	public void ResetAllResistBlocks()
 	{
 		//FIXME: Crashes on shutdown
-		for(Location location : ResistBlocks.keySet())
+		ArrayList<Location> locs = new ArrayList<Location>(ResistBlocks.keySet());
+		for(Location location : locs)
 		{
 			if(ResistBlocks.containsKey(location)) {
-			getServer().getWorld("world").getBlockAt(location).setType(ResistBlocks.get(location).getState().getType());
-			getServer().getWorld("world").getBlockAt(location).setData(ResistBlocks.get(location).getState().getRawData());
-			ResistBlocks.remove(location);
+				getServer().getWorld("world").getBlockAt(location).setType(ResistBlocks.get(location).getState().getType());
+				getServer().getWorld("world").getBlockAt(location).setData(ResistBlocks.get(location).getState().getRawData());
+				ResistBlocks.remove(location);
 			}
 		}
 	}
