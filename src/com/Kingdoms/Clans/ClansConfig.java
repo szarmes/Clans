@@ -34,8 +34,10 @@ public class ClansConfig {
 	private int AlertThreshold; //Not Needed Yet
 	private boolean UPOfflineDamage; //Not Needed Yet
 	private int OfflineDamageAmount; //Not Needed Yet
+	private int ODCooldown;
 	private boolean UPBlockResist; //Not Needed Yet
-	private int ResistanceMultiplier; //Not Needed Yet
+	private int ResistanceBlock; //Not Needed Yet
+	private boolean UPCleanse;
 	
 	//Costs
 	private int TagCost; //Added
@@ -45,6 +47,7 @@ public class ClansConfig {
 	private int UPAlertsCost; //Not Needed Yet
 	private int UPDamageCost; //Not Needed Yet
 	private int UPResistCost; //Not Needed Yet
+	private int UPCleanseCost;
 	
 	//Population Reqs
 	private int ReqMemColor; //Added
@@ -82,8 +85,10 @@ public class ClansConfig {
 		AlertThreshold = 30;
 		UPOfflineDamage = true;
 		OfflineDamageAmount = 2;
+		ODCooldown = 1000;
 		UPBlockResist = true;
-		ResistanceMultiplier = 3;
+		ResistanceBlock = 49;
+		UPCleanse = true;
 		
 		//Costs
 		TagCost = 5;
@@ -93,6 +98,7 @@ public class ClansConfig {
 		UPAlertsCost = 10;
 		UPDamageCost = 25;
 		UPResistCost = 50;
+		UPCleanseCost = 100;
 		
 		//Population Reqs
 		ReqMemColor = 10;
@@ -159,8 +165,10 @@ public class ClansConfig {
     		AlertThreshold = (int) Areas.get("Alert Threshold");
     		UPOfflineDamage = (boolean) Areas.get("UP Offline Defense");
     		OfflineDamageAmount = (int) Areas.get("Offline Damage");
+    		ODCooldown = (int) Areas.get("Damager Cooldown");
     		UPBlockResist = (boolean) Areas.get("UP Block Resist");
-    		ResistanceMultiplier = (int) Areas.get("Resistance Multiplier");
+    		ResistanceBlock = (int) Areas.get("Resistance Block");
+    		UPCleanse = (boolean) Areas.get("UP Cleanser");
     		
         	HashMap<String,Object> Costs = pl.get("Costs");
     		//Costs
@@ -171,6 +179,7 @@ public class ClansConfig {
     		UPAlertsCost = (int) Costs.get("Alert Upgrade");
     		UPDamageCost = (int) Costs.get("Damage Upgrade");
     		UPResistCost = (int) Costs.get("Resist Upgrade");
+    		UPCleanseCost = (int) Costs.get("Cleanse Upgrade");
     		
         	HashMap<String,Object> ReqMem = pl.get("Req Member Counts");
     		//Population Reqs
@@ -239,9 +248,6 @@ public class ClansConfig {
 	public boolean isUPBlockResist() {
 		return UPBlockResist;
 	}
-	public int getResistanceMultiplier() {
-		return ResistanceMultiplier;
-	}
 	public int getTagCost() {
 		return TagCost;
 	}
@@ -278,28 +284,20 @@ public class ClansConfig {
 	public int getCleanPlayerDays() {
 		return CleanPlayerDays;
 	}
-	@Override
-	public String toString() {
-		return "ClansConfig [Currency=" + Currency + ", UseScore=" + UseScore
-				+ ", UseELO=" + UseELO + ", AllowTKToggle=" + AllowTKToggle
-				+ ", TeamTKDefault=" + TeamTKDefault + ", UseTags=" + UseTags
-				+ ", TagFormat=" + TagFormat + ", MessageFormat="
-				+ MessageFormat + ", UseAreas=" + UseAreas + ", AreaMaxSize="
-				+ AreaMaxSize + ", CapturableAreas=" + CapturableAreas
-				+ ", AllowUpgrades=" + AllowUpgrades + ", UPIntruderAlert="
-				+ UPIntruderAlert + ", AlertThreshold=" + AlertThreshold
-				+ ", UPOfflineDamage=" + UPOfflineDamage
-				+ ", OfflineDamageAmount=" + OfflineDamageAmount
-				+ ", UPBlockResist=" + UPBlockResist
-				+ ", ResistanceMultiplier=" + ResistanceMultiplier
-				+ ", TagCost=" + TagCost + ", AreaCost=" + AreaCost
-				+ ", incCapacityCost=" + incCapacityCost + ", incSizeCost="
-				+ incSizeCost + ", UPAlertsCost=" + UPAlertsCost
-				+ ", UPDamageCost=" + UPDamageCost + ", UPResistCost="
-				+ UPResistCost + ", ReqMemColor=" + ReqMemColor
-				+ ", ReqMemArea=" + ReqMemArea + ", ReqScoreColor="
-				+ ReqScoreColor + ", ReqScoreCape=" + ReqScoreCape
-				+ ", CleanPlayerDays=" + CleanPlayerDays + "]";
+	public boolean isUPCleanse() {
+		return UPCleanse;
+	}
+	public int getUPCleanseCost() {
+		return UPCleanseCost;
+	}
+	public int getDamagerKeyCooldown() {
+		return ODCooldown;
+	}
+	public int getResistanceBlock() {
+		return ResistanceBlock;
+	}
+	public void setResistanceBlock(int resistanceBlock) {
+		ResistanceBlock = resistanceBlock;
 	}
 	
 }

@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ClansPlayerListener implements Listener {
     public Clans plugin;
@@ -40,6 +41,14 @@ public class ClansPlayerListener implements Listener {
     	//If player has team and motd, print it
     	if (!plugin.getTeamsMOTD(PlayerName).equalsIgnoreCase(""))
     		event.getPlayer().sendMessage(plugin.getTeamsMOTD(PlayerName));
+    	
+    	if(plugin.getTeamPlayer(event.getPlayer().getDisplayName()).hasTeam())
+    		plugin.IncreaseTeamOnlineCount(plugin.getTeamPlayer(event.getPlayer().getDisplayName()).getTeamKey());
+    }
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerQuit(PlayerQuitEvent event){
+    	if(plugin.getTeamPlayer(event.getPlayer().getDisplayName()).hasTeam())
+    		plugin.DecreaseTeamOnlineCount(plugin.getTeamPlayer(event.getPlayer().getDisplayName()).getTeamKey());
     }
     private String insertData(String format, String tag, String PlayerName)
     {

@@ -9,15 +9,19 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
@@ -49,6 +53,10 @@ public class Clans extends JavaPlugin {
 	
 	//Listeners
 	private final ClansPlayerListener playerListener = new ClansPlayerListener(this);
+	private final ClansBlockListener blockListener = new ClansBlockListener(this);
+	
+	//Extras
+	private HashMap<Location,ResistantBlock> ResistBlocks = new HashMap<Location,ResistantBlock>();
 	
 	
 	public void onEnable() {       
@@ -58,6 +66,7 @@ public class Clans extends JavaPlugin {
         
 		PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(playerListener, this);
+        pm.registerEvents(blockListener, this);
         
         //if(config.UseTags())
         	//pm.registerEvent(Event.PLAYER_CHAT, playerListener, EventPriority.NORMAL, this);
@@ -71,11 +80,14 @@ public class Clans extends JavaPlugin {
 		AreasFile = new File("plugins/Clans/Areas.yml");
 		//Load Data From Files
 		loadData();
+		countOnlineTeamPlayers();
 		
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
 	}
 	public void onDisable() {
+		cleanseAllAreas();
+		ResetAllResistBlocks();
 		log.info("Clans disabled.");
 	}
 
@@ -393,12 +405,16 @@ public class Clans extends JavaPlugin {
             				player.sendMessage(ChatColor.RED + "You lack sufficient permissions to kick on this team");
             				return true;
             			}
-            			if(getTeam(PlayerName).getRankNumber(PlayerName) >= getTeam(PlayerName).getRankNumber((args[1]))){//CANT ALTER LEADERS
-        					player.sendMessage(ChatColor.RED + "Can not kick players with a higher rank than your own.");
-            			}
             			else if(!Users.containsKey(args[1])){ // KICKED NAME DOESN'T EXIST
             				player.sendMessage(ChatColor.RED + "That player does not exist");
             				return true;
+            			}
+            			else if(!Users.get(args[1]).getTeamKey().equalsIgnoreCase(tPlayer.getTeamKey())){ //MAKE SURE BOTH PLAYERS ARE IN THE SAME TEAM
+            				player.sendMessage(ChatColor.RED + "You are not on the same team.");
+            				return true;
+            			}
+            			else if(getTeam(PlayerName).getRankNumber(PlayerName) >= getTeam(PlayerName).getRankNumber((args[1]))){//CANT ALTER LEADERS
+        					player.sendMessage(ChatColor.RED + "Can not kick players with a higher rank than your own.");
             			}
             			else{//KICK OUT OF TEAM
             				teamRemove(args[1]);
@@ -465,6 +481,10 @@ public class Clans extends JavaPlugin {
             			else if(1 > Integer.parseInt(args[2])|| Integer.parseInt(args[2]) > getTeam(PlayerName).getRankCount()){//RANK NUMBER DOESNT EXIST
             				player.sendMessage(ChatColor.RED + "Rank number does not exist.");
             				return true;	
+            			}
+            			else if(!Users.get(args[1]).getTeamKey().equalsIgnoreCase(tPlayer.getTeamKey())){ //MAKE SURE BOTH PLAYERS ARE IN THE SAME TEAM
+            				player.sendMessage(ChatColor.RED + "You are not on the same team.");
+            				return true;
             			}
             			else if(getTeam(PlayerName).isLeader(PlayerName) && getTeam(PlayerName).getLeaderCount() == 1 && args[1].equalsIgnoreCase(PlayerName)){//CANT DEMOTE SELF WITH NO LEADERS	
             				player.sendMessage(ChatColor.RED + "Must promote someone else to leader before changing your own rank.");
@@ -610,7 +630,7 @@ public class Clans extends JavaPlugin {
                 	/* ==============================================================================
                 	 *	TEAM RPERMISSION | RANKPERMISSION - Sets a permission of a rank
                 	 * ============================================================================== */
-            		case "RPERMISSION": case "RANKPERMISSION":
+            		case "RPERMISSION": case "RANKPERMISSION": case "RPERM":
             			if(!player.hasPermission("Clans.rankpermission")) {
             				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             				return true;
@@ -624,7 +644,7 @@ public class Clans extends JavaPlugin {
             				return true;
             			}
             			else if(args.length != 4){
-            				player.sendMessage(ChatColor.RED + "Invalid use of command. Use /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true|false>.");
+            				player.sendMessage(ChatColor.RED + "Invalid use of command. Use /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote/areainfo> <true|false>.");
             				return true;
             			}
             			else if(!isInteger(args[1])){
@@ -660,8 +680,12 @@ public class Clans extends JavaPlugin {
             					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanSetRanks(Boolean.parseBoolean(args[3]));
             					saveTeams();
             					break;
+            				case "AREAINFO":
+            					Teams.get(tPlayer.getTeamKey()).getRank(Integer.parseInt(args[1])).setCanSeeAreaInfo(Boolean.parseBoolean(args[3]));
+            					saveTeams();
+            					break;
             				default: 
-            					player.sendMessage(ChatColor.RED + "Invalid permission. Use /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote> <true|false>.");
+            					player.sendMessage(ChatColor.RED + "Invalid permission. Use /team rpermission <ranknumber> <kick/teamchat/rankedit/invite/promote/areainfo> <true|false>.");
             					return true;
             				}
             				player.sendMessage(ChatColor.GREEN + "Changed rank permission.");
@@ -846,7 +870,7 @@ public class Clans extends JavaPlugin {
                 	 * ============================================================================== */
             		case "HELP": 
             			if(args.length == 1){
-                   			player.sendMessage(ChatColor.RED + "Use /team help 1...4 to view each page.");
+                   			player.sendMessage(ChatColor.RED + "Use /team help 1...5 to view each page.");
                    			return true;
                    		}
             			else if(args[1].equalsIgnoreCase("1")) {
@@ -882,6 +906,17 @@ public class Clans extends JavaPlugin {
                    		}
                    		else if(args[1].equalsIgnoreCase("4")) {
                    			player.sendMessage(ChatColor.RED + "Team Area Commands:");
+                   			player.sendMessage(ChatColor.RED + "/team area claim <area name>"+ChatColor.GRAY +" - Claims an area for the team, If you already have a area it will move it.");
+                   			player.sendMessage(ChatColor.RED + "/team area info"+ChatColor.GRAY +" - Prints out detailed information about your team's area.");
+                   			player.sendMessage(ChatColor.RED + "/team area upgrade <size/alerter/damager/resistance/cleanser>"+ChatColor.GRAY +" - Gives a team area upgrades that provide benefits.");
+                   		}
+                   		else if(args[1].equalsIgnoreCase("5")) {
+                   			player.sendMessage(ChatColor.RED + "Team Area Upgrades:");
+                   			player.sendMessage(ChatColor.RED + "Upgrades: Size"+ChatColor.GRAY +" - Increases team area by 10 blocks.");
+                   			player.sendMessage(ChatColor.RED + "Upgrades: Alerter"+ChatColor.GRAY +" - Alerts your team when an outsider places/destroys blocks in your area.");
+                   			player.sendMessage(ChatColor.RED + "Upgrades: Damager"+ChatColor.GRAY +" - Damages outsiders for placing/destroying blocks inside your area if your team is offline.");
+                   			player.sendMessage(ChatColor.RED + "Upgrades: Resistence"+ChatColor.GRAY +" - Increases the time it takes to destroy blocks in your team area for outsiders.");
+                   			player.sendMessage(ChatColor.RED + "Upgrades: Cleanse"+ChatColor.GRAY +" - Periodically cleanses blocks placed by outsiders from your area.");
                    		}
                    		else
                    			player.sendMessage(ChatColor.RED + "Improper use of command, Usage is /team help [1-4] to view each page.");
@@ -905,7 +940,7 @@ public class Clans extends JavaPlugin {
 	                				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
 	                				return true;
 	                			}
-	                			else if(args.length <= 2){
+	                			else if(args.length < 2){
 	                       			player.sendMessage(ChatColor.RED + "Improper use of command, Usage is /team area <Area Name>.");
 	                       			return true;
 	                       		}
@@ -945,13 +980,14 @@ public class Clans extends JavaPlugin {
 		                				else {
 		                					spend(player.getDisplayName(),config.getAreaCost());
 		                    				int i;
-		                    				String AreaName = args[1];
-		                    				for(i=2;i<args.length;i++)
+		                    				String AreaName = args[2];
+		                    				for(i=3;i<args.length;i++)
 		                    					AreaName += " " + args[i];
 		                    				
-		                    				Areas.put(tPlayer.getTeamKey(),new TeamArea(AreaName, x, z, 25, tPlayer.getTeamKey()));
+		                    				Areas.put(tPlayer.getTeamKey(),new TeamArea(AreaName, x, z,player.getWorld().getName(), 25, tPlayer.getTeamKey()));
 		                    				player.sendMessage(ChatColor.GREEN + "Team area " + AreaName + " was sucessfully created.");
 		                				}
+	                    				saveAreas();
                     				}
 	                			}
 	                		break;
@@ -968,10 +1004,10 @@ public class Clans extends JavaPlugin {
 	                				return true;
 	                			}
 	                			else if(!getRank(PlayerName).canSeeAreaInfo()){ //CAN Area Info
-	                    			player.sendMessage(ChatColor.RED + "You lack sufficient permissions to set ranks on this team");
+	                    			player.sendMessage(ChatColor.RED + "You lack sufficient permissions to view area info on this team.");
 	                    			return true;
 	                    		}
-	                			else if(Areas.containsKey(tPlayer.getTeamKey())){ //CAN Area Info
+	                			else if(!Areas.containsKey(tPlayer.getTeamKey())){ //CAN Area Info
 	                    			player.sendMessage(ChatColor.RED + "Your team does not have a team area.");
 	                    			return true;
 	                    		}
@@ -987,33 +1023,33 @@ public class Clans extends JavaPlugin {
 	                				int zMax = a.getzLoc()+a.getAreaRadius();
 	                				int zMin = a.getzLoc()-a.getAreaRadius();
 	                				player.sendMessage(ChatColor.DARK_GREEN +"Location: " + ChatColor.GREEN + "  MAX: {"+xMax + ", "+zMax +"}   MIN: {"+xMin + ", "+zMin +"}");
-	                				player.sendMessage(ChatColor.DARK_GREEN +"Size: " + a.getAreaRadius()*2 + "x"+ a.getAreaRadius()*2);
+	                				player.sendMessage(ChatColor.DARK_GREEN +"Size: " + ChatColor.GREEN + a.getAreaRadius()*2 + "x"+ a.getAreaRadius()*2);
 	                				
 	                				String Upgrades = "";
-	                				if(a.hasIntruderAlert())
-	                					Upgrades += "IntruderAlert";
-	                				if(a.hasBlockDestroyDamage())
+	                				if(a.hasUpgradeAlerter())
+	                					Upgrades += "Alerter";
+	                				if(a.hasUpgradeDamager())
 	                				{
 	                					if(!Upgrades.equalsIgnoreCase(""))
-	                						Upgrades += ", DestroyDamage";
+	                						Upgrades += ", Damager";
 	                					else
 	                						Upgrades += "DestroyDamage";
 	                				}
-	                				if(a.hasBlockResistance())
+	                				if(a.hasUpgradeResistance())
 	                				{
 	                					if(!Upgrades.equalsIgnoreCase(""))
 	                						Upgrades += ", Resistance";
 	                					else
 	                						Upgrades += "Resistance";
 	                				}
-	                				if(a.hasAreaCleanse())
+	                				if(a.hasUpgradeCleanser())
 	                				{
 	                					if(!Upgrades.equalsIgnoreCase(""))
-	                						Upgrades += ", Cleanse";
+	                						Upgrades += ", Cleanser";
 	                					else
 	                						Upgrades += "Cleanse";
 	                				}
-                					if(!Upgrades.equalsIgnoreCase(""))
+                					if(Upgrades.equalsIgnoreCase(""))
                 						Upgrades += "None";
 	                				player.sendMessage(ChatColor.DARK_GREEN +"Upgrades: " + ChatColor.GREEN + Upgrades);
 	                			}
@@ -1021,12 +1057,163 @@ public class Clans extends JavaPlugin {
                     		/* ==============================================================================
                     		 *	TEAM AREA UPGRADE - Upgrades an area for currency.
                     		 * ============================================================================== */
-                    		case "UPGRADE":          
+                    		case "UPGRADE":    
+                    			if(!player.hasPermission("Clans.area.upgrade")) {
+	                				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+	                				return true;
+	                			}
+                    			else if(!config.AllowUpgrades()) {
+	                				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+	                				return true;
+	                			}
+	                			else if(args.length <= 2){
+	                       			player.sendMessage(ChatColor.RED + "Improper use of command, Usage is /team upgrade <Type>.");
+	                       			return true;
+	                       		}
+	                			else if(!tPlayer.hasTeam()){//NO TEAM
+	                				player.sendMessage(ChatColor.RED + "You are not in a team.");
+	                				return true;
+	                			}
+	                			else if(!Areas.containsKey(tPlayer.getTeamKey())){ //CAN Area Info
+	                    			player.sendMessage(ChatColor.RED + "Your team does not have a team area.");
+	                    			return true;
+	                    		}
+	                			else if (!getTeam(PlayerName).isLeader(PlayerName)) {//MUST BE LEADER
+	                				player.sendMessage(ChatColor.RED + "You must be the leader to disband the team.");
+	                				return true;
+	                			}
+	                			else
+	                			{
+	                				if(args[2].equalsIgnoreCase("size"))
+	                				{
+	                					if(Areas.get(tPlayer.getTeamKey()).getAreaRadius()*2 > config.getAreaMaxSize()) {
+	    	                       			player.sendMessage(ChatColor.RED + "Your team area is already at max size.");
+		                       				return true;
+	                					}
+	    	                			else if(!canAfford(PlayerName,config.getIncSizeCost()))	{
+	    	                				player.sendMessage(ChatColor.RED + "Using this command costs " + config.getIncSizeCost() + " of " + getCurrencyName() + " (Must have in Inventory).");
+	    	                				return true;
+	    	                			}
+	    	                			else {
+	    	                				spend(player.getDisplayName(),config.getIncSizeCost());
+	    	                				Areas.get(tPlayer.getTeamKey()).increaseRadius(5);
+	    	                				player.sendMessage(ChatColor.GREEN + "Area radius has been increased to " + Areas.get(tPlayer.getTeamKey()).getAreaRadius() +".");
+	    	                				saveAreas();
+	    	                			}
+	                					
+	                				}
+	                				else if(args[2].equalsIgnoreCase("resistance"))
+	                				{
+	                					if(!config.isUPBlockResist()) {
+	    	                       			player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+		                       				return true;
+	                					}
+	                					if(Areas.get(tPlayer.getTeamKey()).hasUpgradeResistance()) {
+	    	                       			player.sendMessage(ChatColor.RED + "Your team area is already has the resistance upgrade.");
+		                       				return true;
+	                					}
+	    	                			else if(!canAfford(PlayerName,config.getUPResistCost()))	{
+	    	                				player.sendMessage(ChatColor.RED + "Using this command costs " + config.getUPResistCost() + " of " + getCurrencyName() + " (Must have in Inventory).");
+	    	                				return true;
+	    	                			}
+	    	                			else {
+	    	                				spend(player.getDisplayName(),config.getUPResistCost());
+	    	                				Areas.get(tPlayer.getTeamKey()).setUpgradeResistance(true);
+	    	                				player.sendMessage(ChatColor.GREEN + "Your team area now has the resistance upgrade.");
+	    	                				saveAreas();
+	    	                			}
+	                				}
+	                				else if(args[2].equalsIgnoreCase("alerter"))
+	                				{
+	                					if(!config.isUPIntruderAlert()) {
+	    	                       			player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+		                       				return true;
+	                					}
+	                					if(Areas.get(tPlayer.getTeamKey()).hasUpgradeAlerter()) {
+	    	                       			player.sendMessage(ChatColor.RED + "Your team area is already has the alerter upgrade.");
+		                       				return true;
+	                					}
+	    	                			else if(!canAfford(PlayerName,config.getUPAlertsCost()))	{
+	    	                				player.sendMessage(ChatColor.RED + "Using this command costs " + config.getUPAlertsCost() + " of " + getCurrencyName() + " (Must have in Inventory).");
+	    	                				return true;
+	    	                			}
+	    	                			else {
+	    	                				spend(player.getDisplayName(),config.getUPAlertsCost());
+	    	                				Areas.get(tPlayer.getTeamKey()).setUpgradeAlerter(true);
+	    	                				player.sendMessage(ChatColor.GREEN + "Your team area now has the alerter upgrade.");
+	    	                				saveAreas();
+	    	                			}
+	                				}
+	                				else if(args[2].equalsIgnoreCase("damager"))
+	                				{
+	                					if(!config.isUPOfflineDamage()) {
+	    	                       			player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+		                       				return true;
+	                					}
+	                					if(Areas.get(tPlayer.getTeamKey()).hasUpgradeDamager()) {
+	    	                       			player.sendMessage(ChatColor.RED + "Your team area is already has the damager upgrade.");
+		                       				return true;
+	                					}
+	    	                			else if(!canAfford(PlayerName,config.getUPDamageCost()))	{
+	    	                				player.sendMessage(ChatColor.RED + "Using this command costs " + config.getUPDamageCost() + " of " + getCurrencyName() + " (Must have in Inventory).");
+	    	                				return true;
+	    	                			}
+	    	                			else {
+	    	                				spend(player.getDisplayName(),config.getUPDamageCost());
+	    	                				Areas.get(tPlayer.getTeamKey()).setUpgradeDamager(true);
+	    	                				player.sendMessage(ChatColor.GREEN + "Your team area now has the damager upgrade.");
+	    	                				saveAreas();
+	    	                			}
+	                				}
+	                				else if(args[2].equalsIgnoreCase("cleanser"))
+	                				{
+	                					if(!config.isUPCleanse()) {
+	    	                       			player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+		                       				return true;
+	                					}
+	                					if(Areas.get(tPlayer.getTeamKey()).hasUpgradeCleanser()) {
+	    	                       			player.sendMessage(ChatColor.RED + "Your team area is already has the cleanser upgrade.");
+		                       				return true;
+	                					}
+	    	                			else if(!canAfford(PlayerName,config.getUPCleanseCost()))	{
+	    	                				player.sendMessage(ChatColor.RED + "Using this command costs " + config.getUPCleanseCost() + " of " + getCurrencyName() + " (Must have in Inventory).");
+	    	                				return true;
+	    	                			}
+	    	                			else {
+	    	                				spend(player.getDisplayName(),config.getUPCleanseCost());
+	    	                				Areas.get(tPlayer.getTeamKey()).setUpgradeCleanser(true);
+	    	                				player.sendMessage(ChatColor.GREEN + "Your team area now has the cleanser upgrade.");
+	    	                				saveAreas();
+	    	                			}
+	                					
+	                				}
+		                			else{
+		                       			player.sendMessage(ChatColor.RED + "Improper upgrade type, Usage is /team upgrade <Size/Resistance/Alerter/Damager/Cleanser>.");
+		                       			return true;
+		                       		}
+	                			}
                     		break;
-                    		/* ==============================================================================
-                    		 *	TEAM AREA LIST - Lists team areas currently held a team.
-                    		 * ============================================================================== */
-                    		case "LIST":          
+                    		case "CLEAN":  
+                    			if(!player.hasPermission("Clans.area.clean")) {
+	                				player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+	                				return true;
+	                			}
+	                			else if(!tPlayer.hasTeam()){//NO TEAM
+	                				player.sendMessage(ChatColor.RED + "You are not in a team.");
+	                				return true;
+	                			}
+	                			else if(!Areas.containsKey(tPlayer.getTeamKey())){ //CAN Area Info
+	                    			player.sendMessage(ChatColor.RED + "Your team does not have a team area.");
+	                    			return true;
+	                    		}
+	                			else if(!Areas.get(tPlayer.getTeamKey()).hasUpgradeCleanser()){ //CAN cleanse
+	                    			player.sendMessage(ChatColor.RED + "Your team does not have this upgrade.");
+	                    			return true;
+	                    		}
+	                			else
+	                			{
+	                				 cleanseArea(tPlayer.getTeamKey());
+	                			}
                     		break;
                     	}         			
             	}
@@ -1050,20 +1237,19 @@ public class Clans extends JavaPlugin {
    			 		player.sendMessage(ChatColor.RED + "You did not enter a message to send.");
    			 		return true;
    			 	}
+   			 	else if (args[0].equalsIgnoreCase("@loc"))
+   			 	{
+   			 		String message = "I am at X:"+ player.getLocation().getBlockX() + " Z:" + player.getLocation().getBlockZ() + " Y:" + player.getLocation().getBlockY() +".";
+	  				messageTeam(tPlayer.getTeamKey(),ChatColor.DARK_GREEN + PlayerName + ": " + ChatColor.GREEN  + message);    	
+   			 	}
    			 	else {
      				int i;
      				String message = args[0];
      				for(i=1;i<args.length;i++)
      					message += " " + args[i];
-	  				String teamKey = tPlayer.getTeamKey();
-	  				Team team = Teams.get(tPlayer.getTeamKey());
-	  				Player[] onlineList = getServer().getOnlinePlayers();  				 
-	  				 
-	  				for (Player p : onlineList) {
-	  					String userTeamKey = Users.get(p.getDisplayName()).getTeamKey();
-	  					if(userTeamKey.equals(teamKey))
-	  						p.sendMessage(ChatColor.GREEN + "[TEAM] " + ChatColor.DARK_GREEN + PlayerName + ": " + ChatColor.GREEN  + message);
-	  				 }         				 
+	  				String teamKey = tPlayer.getTeamKey();			 
+	  				
+	  				messageTeam(teamKey,ChatColor.DARK_GREEN + PlayerName + ": " + ChatColor.GREEN  + message);    				 
    			 	}
             }
             else if(commandName.equals("elo"))//maybe change ELO to ratings?
@@ -1106,6 +1292,10 @@ public class Clans extends JavaPlugin {
 				return key;
 		}
 		return result;
+	}
+	public TeamArea getArea(String teamName)
+	{
+		return Areas.get(teamName);
 	}
 	//Used for creating and moving areas
 	private String checkAreaMax(int x, int z, String world, String team)
@@ -1420,12 +1610,18 @@ public class Clans extends JavaPlugin {
 		Users.get(PlayerName).setTeamKey(tPlayer.getInvite());
 		Teams.get(tPlayer.getTeamKey()).addMember(PlayerName);
 		Users.get(PlayerName).clearInvite();
+		Teams.get(tPlayer.getTeamKey()).IncreaseOnlineCount();
 	}
 	private void teamRemove(String PlayerName){
 		TeamPlayer tPlayer = Users.get(PlayerName);
 		Teams.get(tPlayer.getTeamKey()).removeMember(PlayerName);
 		if(Teams.get(tPlayer.getTeamKey()).getTeamSize() < config.getReqMemColor())
 			Teams.get(tPlayer.getTeamKey()).setColor("GRAY");
+		
+		if(getServer().getPlayer(PlayerName).isOnline())
+		{
+			Teams.get(tPlayer.getTeamKey()).DecreaseOnlineCount();
+		}
 		
 		Users.get(PlayerName).clearTeamKey();
 	}
@@ -1465,5 +1661,154 @@ public class Clans extends JavaPlugin {
 	public ClansConfig getClansConfig()
 	{
 		return config;
+	}
+	private int getTime()
+	{
+		Calendar calendar = new GregorianCalendar();
+		int time = calendar.get(Calendar.HOUR)*1000 + calendar.get(Calendar.MINUTE)*100 + calendar.get(Calendar.SECOND);
+		return time;
+	}
+	private void messageTeam(String teamName, String msg)
+	{
+		Team team = Teams.get(teamName);
+		Player[] onlineList = getServer().getOnlinePlayers();  				 
+			 
+		for (Player p : onlineList) {
+			String userTeamKey = Users.get(p.getDisplayName()).getTeamKey();
+			if(userTeamKey.equals(teamName))
+				p.sendMessage(ChatColor.GREEN + "[TEAM] " + msg);
+		}  
+	}
+	public void TriggerAlerter(String teamName) {
+		TeamArea a = Areas.get(teamName);
+		int t = getTime();
+		if(t < a.getLastAlertTime() || a.getLastAlertTime()+config.getAlertThreshold() < t) {
+			messageTeam(teamName, ""+ChatColor.RED+"Alert! Intruder has been spotted near "+ a.getAreaName() +".");
+			Areas.get(teamName).updateAlertTime();
+		}
+	}
+	public void TriggerDamager(Player player, String teamName) 
+	{
+		//If team is offline
+		if(Teams.get(teamName).getOnlineCount() <= 0)
+		{
+			TeamArea a = Areas.get(teamName);
+			int t = getTime();
+			
+			//Check if keys have expired
+			if(a.hasDamagerKey(player.getDisplayName()) && (t < a.getLastOnlineTime() || a.getLastOnlineTime()+config.getDamagerKeyCooldown() < t)) {
+				Areas.get(teamName).removeAllDamagerKeys();
+			}
+			//Damage Player if they dont have a key
+			if(!a.hasDamagerKey(player.getDisplayName())) {
+				player.damage(config.getOfflineDamageAmount());
+				player.sendMessage(ChatColor.RED + "You are in a team's area and they are all offline, you have taken "+config.getOfflineDamageAmount() +" damage.");
+			}
+		}
+	}
+	public void TriggerCleanserPlace(Block block, String teamName) {
+		//record block to cleanse hashmap
+		Areas.get(teamName).addCleanseLocation(block.getLocation());
+	}
+	public void TriggerCleanserBreak(Block block, String teamName) {
+		//check if block is in cleanse hashmap, if so remove it
+		if(Areas.get(teamName).hasCleanseLocation(block.getLocation()))
+		   Areas.get(teamName).removeCleanseLocation(block.getLocation());
+	}
+	private void cleanseArea(String teamName)
+	{
+		String world = Areas.get(teamName).getWorld();
+		HashSet<Location> cleanser = Areas.get(teamName).getCleanseData();
+		if(cleanser.size() > 0)
+			messageTeam(teamName, ""+ChatColor.GREEN + "Cleanser has cleansed " + cleanser.size() +" blocks from your area.");
+		for(Location loc : cleanser)
+			getServer().getWorld("world").getBlockAt(loc).setTypeId(0);
+	}
+	private void cleanseAllAreas()
+	{
+		for(String key : Areas.keySet()) {
+			if(Areas.get(key).hasUpgradeCleanser()) 
+				cleanseArea(key);
+		}
+	}
+	public void TriggerResistanceDamage(Block block) {
+		if(ResistBlocks.containsKey(block.getLocation())) {
+			ResistBlocks.get(block.getLocation()).IncreaseExtTime();
+			getServer().getScheduler().scheduleSyncDelayedTask(this, ResistBlocks.get(block.getLocation()), 5100L);
+		}
+		else //if (getServer().getWorld("world").getBlockAt(block.getLocation()).getTypeId() != config.getResistanceBlock()) //if already obsidian do nothing
+		{
+			ResistBlocks.put(block.getLocation(), new ResistantBlock(this,block.getState()));
+			getServer().getWorld("world").getBlockAt(block.getLocation()).setTypeId(49);
+			getServer().getScheduler().scheduleSyncDelayedTask(this, ResistBlocks.get(block.getLocation()), 5100L);
+		}
+	}
+	public void TriggerResistanceBreak(Block block) {
+		//FIXME: Gives double obsidian if block was obsidian to start
+		if(ResistBlocks.containsKey(block.getLocation())) {
+			//Cancels Block
+			getServer().getWorld("world").getBlockAt(block.getLocation()).setType(ResistBlocks.get(block.getLocation()).getState().getType());
+			getServer().getWorld("world").getBlockAt(block.getLocation()).setData(ResistBlocks.get(block.getLocation()).getState().getRawData());
+			getServer().getWorld("world").getBlockAt(block.getLocation()).breakNaturally();
+			ResistBlocks.remove(block.getLocation());
+		}
+	}
+	public void IncreaseTeamOnlineCount(String teamName)
+	{
+		Teams.get(teamName).IncreaseOnlineCount();
+	}
+	public void DecreaseTeamOnlineCount(String teamName)
+	{
+		Teams.get(teamName).DecreaseOnlineCount();
+		if(Teams.get(teamName).getOnlineCount() <= 0) {
+			if(Areas.containsKey(teamName)) {
+				if(Areas.get(teamName).hasUpgradeDamager()) {
+					Areas.get(teamName).setLastOnlineTime();
+					Player[] onlineList = getServer().getOnlinePlayers(); 
+					for (Player p : onlineList) {
+						int x = p.getLocation().getBlockX();
+						int z = p.getLocation().getBlockZ();
+						String worldname = p.getWorld().getName();
+						if(Areas.get(teamName).inArea(x, z, worldname)) {
+							Areas.get(teamName).addDamagerKey(p.getDisplayName());
+						}
+					}  
+				}
+			}
+		}
+	}
+	private void countOnlineTeamPlayers()
+	{
+		Player[] onlineList = getServer().getOnlinePlayers();  	
+		 
+		for (Player p : onlineList) {
+			if(Users.get(p.getDisplayName()).hasTeam()) {
+				Teams.get(Users.get(p.getDisplayName()).getTeamKey()).IncreaseOnlineCount();
+			}
+		}  
+	}
+	public void ResetResistBlock(Location location) {
+		//FIXME: need to give blocks IDs for start so if you get rid of a block, then place it, the thread from the old block doesn't reset it
+		if(ResistBlocks.containsKey(location)) {
+			//set back to normal
+			getServer().getWorld("world").getBlockAt(location).setType(ResistBlocks.get(location).getState().getType());
+			getServer().getWorld("world").getBlockAt(location).setData(ResistBlocks.get(location).getState().getRawData());
+			ResistBlocks.remove(location);
+		}
+	}
+	public void ResetAllResistBlocks()
+	{
+		//FIXME: Crashes on shutdown
+		for(Location location : ResistBlocks.keySet())
+		{
+			if(ResistBlocks.containsKey(location)) {
+			getServer().getWorld("world").getBlockAt(location).setType(ResistBlocks.get(location).getState().getType());
+			getServer().getWorld("world").getBlockAt(location).setData(ResistBlocks.get(location).getState().getRawData());
+			ResistBlocks.remove(location);
+			}
+		}
+	}
+	public boolean isResistBlock(Location location) {
+		return ResistBlocks.containsKey(location);
 	}
 }

@@ -6,7 +6,7 @@ import java.util.Calendar;
 public class TeamPlayer {
 
 	private int ELO;
-	Calendar LastSeen;
+	private Calendar LastSeen;
 
 	private String TeamKey;
 	private String Invite;

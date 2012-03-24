@@ -1,19 +1,31 @@
 package com.Kingdoms.Clans;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+
+import org.bukkit.Location;
+
 public class TeamArea {
 
-	String AreaName;
-	String Holder;
-	String world;
-	int xLoc;
-	int zLoc;
-	int AreaRadius;
+	private String AreaName;
+	private String Holder;
+	private String world;
+	private int xLoc;
+	private int zLoc;
+	private int AreaRadius;
 	
 	//Upgrades
-	boolean IntruderAlert;
-	boolean BlockResistance;
-	boolean BlockDestroyDamage;
-	boolean AreaCleanse;
+	private boolean UpgradeAlerter;
+	private boolean UpgradeResistance;
+	private boolean UpgradeDamager;
+	private boolean UpgradeCleanser;
+	
+	//Upgrades Variables
+	private int LastAlertTime;
+	private HashSet<Location> Cleanser = new HashSet<Location>();
+	private HashSet<String> DamagerKeys = new HashSet<String>();
+	private int LastOnlineTime;
 	
 	public TeamArea(String aN, int X, int Z, String worldname, int rad, String hold, boolean upIA, boolean upBR, boolean upBDD, boolean upAC)
 	{
@@ -24,28 +36,35 @@ public class TeamArea {
 		Holder = hold;
 		world = worldname;
 		
+		LastAlertTime = getTime();
+		LastOnlineTime = getTime();
+		
 		//Upgrades
-		IntruderAlert = upIA;
-		BlockResistance = upBR;
-		BlockDestroyDamage = upBDD;
-		AreaCleanse = upAC;
+		UpgradeAlerter = upIA;
+		UpgradeResistance = upBR;
+		UpgradeDamager = upBDD;
+		UpgradeCleanser = upAC;
 	}
-	public TeamArea(String aN, int X, int Z, int rad, String hold)
+	public TeamArea(String aN, int X, int Z, String worldname, int rad, String hold)
 	{
 		AreaName = aN;
 		xLoc = X;
 		zLoc = Z;
 		AreaRadius = rad;
 		Holder = hold;
+		world = worldname;
+		
+		LastAlertTime = getTime();
+		LastOnlineTime = getTime();
 		
 		//Upgrades
-		IntruderAlert = false;
-		BlockResistance = false;
-		BlockDestroyDamage = false;
-		AreaCleanse = false;;
+		UpgradeAlerter = false;
+		UpgradeResistance = false;
+		UpgradeDamager = false;
+		UpgradeCleanser = false;
 	}
 	public boolean inArea(int x, int z, String worldname)
-	{	
+	{		        
 		boolean isInArea = false;
 		if(world.equalsIgnoreCase(worldname)) {
 			if(xLoc-AreaRadius <= x && x <= xLoc+AreaRadius) {
@@ -63,12 +82,26 @@ public class TeamArea {
 		save += "    Name: \"" + AreaName + "\"\n";
 		save += "    World: \"" + world + "\"\n";
 		save += "    X: \"" + xLoc + "\"\n";
-		save += "    Z: \"" + "zLoc" + "\"\n";
+		save += "    Z: \"" + zLoc + "\"\n";
 		save += "    Radius: \"" + AreaRadius + "\"\n";
 		save += "    Holder: \"" + Holder + "\"\n";
-		save += "    Upgrades: {" +"IntruderAlert: "+ IntruderAlert  + ", BlockResistance: "+ BlockResistance + ", BlockDestroyDamage: "+ BlockDestroyDamage + ", AreaCleanse: "+ AreaCleanse + "}\n";
+		save += "    Upgrades: {" +"IntruderAlert: "+ UpgradeAlerter  + ", BlockResistance: "+ UpgradeResistance + ", BlockDestroyDamage: "+ UpgradeDamager + ", AreaCleanse: "+ UpgradeCleanser + "}\n";
 		
 		return save;
+	}
+	private int getTime()
+	{
+		Calendar calendar = new GregorianCalendar();
+		int time = calendar.get(Calendar.HOUR)*1000 + calendar.get(Calendar.MINUTE)*100 + calendar.get(Calendar.SECOND);
+		return time;
+	}
+	public void updateAlertTime()
+	{
+		LastAlertTime = getTime();
+	}
+	public int getLastAlertTime()
+	{
+		return LastAlertTime;
 	}
 	public String getHolder() {
 		return Holder;
@@ -94,29 +127,29 @@ public class TeamArea {
 	public void setAreaRadius(int areaRadius) {
 		AreaRadius = areaRadius;
 	}
-	public boolean hasIntruderAlert() {
-		return IntruderAlert;
+	public boolean hasUpgradeAlerter() {
+		return UpgradeAlerter;
 	}
-	public void setIntruderAlert(boolean intruderAlert) {
-		IntruderAlert = intruderAlert;
+	public boolean hasUpgradeResistance() {
+		return UpgradeResistance;
 	}
-	public boolean hasBlockResistance() {
-		return BlockResistance;
+	public boolean hasUpgradeDamager() {
+		return UpgradeDamager;
 	}
-	public void setBlockResistance(boolean blockResistance) {
-		BlockResistance = blockResistance;
+	public boolean hasUpgradeCleanser() {
+		return UpgradeCleanser;
 	}
-	public boolean hasBlockDestroyDamage() {
-		return BlockDestroyDamage;
+	public void setUpgradeAlerter(boolean upgradeAlerter) {
+		UpgradeAlerter = upgradeAlerter;
 	}
-	public void setBlockDestroyDamage(boolean blockDestroyDamage) {
-		BlockDestroyDamage = blockDestroyDamage;
+	public void setUpgradeResistance(boolean upgradeResistance) {
+		UpgradeResistance = upgradeResistance;
 	}
-	public boolean hasAreaCleanse() {
-		return AreaCleanse;
+	public void setUpgradeDamager(boolean upgradeDamager) {
+		UpgradeDamager = upgradeDamager;
 	}
-	public void setAreaCleanse(boolean areaCleanse) {
-		AreaCleanse = areaCleanse;
+	public void setUpgradeCleanser(boolean upgradeCleanser) {
+		UpgradeCleanser = upgradeCleanser;
 	}
 	public String getWorld() {
 		return world;
@@ -124,6 +157,39 @@ public class TeamArea {
 	public String getAreaName()
 	{
 		return AreaName;
+	}
+	public void increaseRadius(int i) {
+		AreaRadius += i;
+	}
+	public void addCleanseLocation(Location loc)
+	{
+		Cleanser.add(loc);
+	}
+	public void removeCleanseLocation(Location loc)
+	{
+		Cleanser.remove(loc);
+	}
+	public boolean hasCleanseLocation(Location loc)
+	{
+		return Cleanser.contains(loc);
+	}
+	public HashSet<Location> getCleanseData() {
+		return Cleanser;
+	}
+	public boolean hasDamagerKey(String playername) {
+		return DamagerKeys.contains(playername);
+	}
+	public void addDamagerKey(String playername) {
+		DamagerKeys.add(playername);
+	}
+	public int getLastOnlineTime() {
+		return LastOnlineTime;
+	}
+	public void setLastOnlineTime() {
+		LastOnlineTime = getTime();
+	}
+	public void removeAllDamagerKeys() {
+		DamagerKeys = new HashSet<String>();
 	}
 	
 }

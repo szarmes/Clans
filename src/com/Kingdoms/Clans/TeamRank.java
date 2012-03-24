@@ -23,7 +23,7 @@ public class TeamRank {
 		canEditRanks = false;
 		canKick = false;
 		canTeamChat = true;
-		canSeeAreaInfo = false;
+		canSeeAreaInfo = true;
 	
 	}
 	//Read in from file

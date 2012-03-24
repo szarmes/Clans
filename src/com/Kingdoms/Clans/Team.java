@@ -15,6 +15,8 @@ public class Team {
 	private int TeamScore;
 	private String TeamTag;
 	
+	private int OnlineCount;
+	
 	//Read in from file
 	public Team(ArrayList<TierList> TLin, String MOTDin, int Scorein, String Tagin, String Colorin)
 	{
@@ -23,6 +25,7 @@ public class Team {
 		TeamScore = Scorein;
 		TeamTag = Tagin;
 		TeamColor = interpretColor(Colorin);
+		OnlineCount = 0;
 	}
 	//Read in from file
 	public Team(String Leadername)
@@ -43,6 +46,8 @@ public class Team {
 		TeamScore = 0;
 		TeamTag = "";
 		TeamColor = interpretColor("GRAY");
+		
+		OnlineCount = 0;
 	}
 	
 	public boolean isLeader(String PlayerName)
@@ -357,6 +362,15 @@ public boolean validateColor(String Colorin){
     			break;
     	}
 		return c;
+	}
+	public void IncreaseOnlineCount() {
+		OnlineCount++;
+	}
+	public void DecreaseOnlineCount() {
+		OnlineCount--;
+	}
+	public int getOnlineCount() {
+		return OnlineCount;
 	}
 
 }
